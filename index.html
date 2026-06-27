@@ -394,7 +394,276 @@
         </div>
       </sc-if>
 
-      <!--ROLE-SCREENS-->
+      <!-- =================== OPERATOR =================== -->
+      <sc-if value="{{ showOperator }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:nivpop .25s ease both;">
+          <div style="display:flex;align-items:center;gap:13px;padding:15px 24px;border-bottom:1px solid #ece4d4;background:#fbf8f2;">
+            <div style="font-weight:800;font-size:16px;">Operator console</div>
+            <span style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#8a8170;">Anjali · Intake desk</span>
+            <span style="margin-left:auto;font-family:'Spline Sans Mono',monospace;font-size:11px;color:#0c6157;background:#dff0ea;border-radius:8px;padding:4px 10px;">{{ queueCount }} in view</span>
+          </div>
+
+          <!-- QUEUE -->
+          <sc-if value="{{ oQueue }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 24px 36px;">
+              <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <sc-for list="{{ queueFilters }}" as="qf" hint-placeholder-count="4">
+                  <button onClick="{{ qf.set }}" style="{{ qf.style }}">{{ qf.label }} <span style="opacity:.7;">{{ qf.n }}</span></button>
+                </sc-for>
+                <span style="margin-left:auto;align-self:center;font-size:12px;color:#9a9183;">Sorted by priority + SLA urgency</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <sc-for list="{{ queueRows }}" as="g" hint-placeholder-count="5">
+                  <button onClick="{{ g.open }}" style="display:block;width:100%;text-align:left;background:#fff;border:1px solid #e6dcc8;border-radius:13px;padding:14px 16px;cursor:pointer;transition:box-shadow .12s;{{ g.rowBorder }}" style-hover="box-shadow:0 8px 20px -14px rgba(43,38,32,.4);">
+                    <div style="display:flex;align-items:center;gap:11px;">
+                      <span style="font-size:20px;">{{ g.icon }}</span>
+                      <div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:8px;"><b style="font-size:14.5px;">{{ g.id }}</b><span style="font-size:14px;color:#4a443c;">{{ g.title }}</span></div><div style="font-size:12px;color:#8a8170;">{{ g.area }} · via {{ g.channel }}</div></div>
+                      <span style="{{ g.prioStyle }}">{{ g.prio }}</span>
+                      <span style="{{ g.statusStyle }}">{{ g.status }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:9px;margin-top:11px;padding-top:11px;border-top:1px solid #f1ece1;flex-wrap:wrap;">
+                      <span style="{{ g.slaStyle }}">{{ g.slaLabel }}</span>
+                      <span style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#6e665b;">✦ {{ g.aiLine }}</span>
+                      <sc-if value="{{ g.dup }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;color:#7a52a8;background:#f0e9f6;border-radius:14px;padding:3px 9px;">{{ g.dupLabel }}</span></sc-if>
+                      <sc-if value="{{ g.lowConf }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;color:#bf6a1c;background:#fbeeda;border-radius:14px;padding:3px 9px;">⚑ human review</span></sc-if>
+                      <span style="margin-left:auto;font-size:12px;color:#0c6157;font-weight:600;">Open ›</span>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- OPERATOR DETAIL -->
+          <sc-if value="{{ oDetail }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:18px 24px 36px;">
+              <button onClick="{{ opBack }}" style="background:none;border:0;color:#0c6157;font-weight:600;font-size:13px;cursor:pointer;padding:0;margin-bottom:14px;">← Back to queue</button>
+              <div style="display:grid;grid-template-columns:1.5fr .9fr;gap:18px;align-items:start;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px;">
+                    <span style="font-size:26px;">{{ opIcon }}</span>
+                    <div style="flex:1;"><div style="display:flex;align-items:center;gap:9px;"><b style="font-size:18px;">{{ opId }}</b><span style="{{ opStatusStyle }}">{{ opStatus }}</span></div><div style="font-size:14px;color:#4a443c;">{{ opTitle }}</div></div>
+                  </div>
+                  <!-- AI triage -->
+                  <div style="border:1px solid #bfe0d6;background:linear-gradient(135deg,#e7f2ed,#f7fbf9);border-radius:14px;padding:16px;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span>✦</span><span style="font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#0c6157;">AI triage suggestion</span><span style="margin-left:auto;font-family:'Spline Sans Mono',monospace;font-size:12px;font-weight:600;{{ opConfTone }}">{{ opAiConf }}% confidence</span></div>
+                    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:13px;">
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:9px;padding:8px 12px;"><span style="font-size:10px;color:#9a9183;">Category</span><div style="font-weight:700;font-size:13.5px;">{{ opAiCat }}</div></div>
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:9px;padding:8px 12px;"><span style="font-size:10px;color:#9a9183;">Route to</span><div style="font-weight:700;font-size:13.5px;">{{ opAiDept }}</div></div>
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:9px;padding:8px 12px;"><span style="font-size:10px;color:#9a9183;">Priority</span><div style="margin-top:2px;"><span style="{{ opAiPrioStyle }}">{{ opAiPrio }}</span></div></div>
+                    </div>
+                    <sc-if value="{{ opLowConf }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#bf6a1c;background:#fbeeda;border-radius:8px;padding:7px 10px;margin-bottom:11px;">⚑ Low confidence — needs a human decision before routing.</div></sc-if>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <button onClick="{{ opAcceptAI }}" style="background:#13716a;color:#fff;border:0;border-radius:9px;padding:9px 15px;font-weight:600;font-size:13px;cursor:pointer;">✓ Accept routing</button>
+                      <button onClick="{{ opOverride }}" style="background:#fff;color:#2b2620;border:1px solid #ddd4c2;border-radius:9px;padding:9px 15px;font-weight:600;font-size:13px;cursor:pointer;">✎ Override</button>
+                      <sc-if value="{{ opHasDup }}" hint-placeholder-val="{{ false }}"><button onClick="{{ opMerge }}" style="background:#f0e9f6;color:#7a52a8;border:1px solid #d9c9ea;border-radius:9px;padding:9px 15px;font-weight:600;font-size:13px;cursor:pointer;">{{ opDupLabel }}</button></sc-if>
+                    </div>
+                  </div>
+                  <!-- description / evidence -->
+                  <div style="border:1px solid #e6dcc8;border-radius:13px;padding:14px;margin-bottom:14px;">
+                    <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:5px;">Citizen report</div>
+                    <div style="font-size:13.5px;line-height:1.5;color:#4a443c;margin-bottom:11px;">{{ opDesc }}</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div style="width:64px;height:46px;border-radius:8px;background:repeating-linear-gradient(45deg,#e8e2d4,#e8e2d4 5px,#f1ece1 5px,#f1ece1 10px);display:flex;align-items:center;justify-content:center;font-size:16px;">📍</div>
+                      <div style="font-size:12.5px;color:#6e665b;">{{ opArea }}<br>{{ opCitizen }}</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- action rail -->
+                <div style="display:flex;flex-direction:column;gap:13px;">
+                  <div style="border:1px solid #e6dcc8;border-radius:13px;padding:15px;background:#fbf8f2;">
+                    <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:9px;">Current routing</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><span style="font-size:12.5px;color:#8a8170;">Department</span><b style="font-size:13px;">{{ opDept }}</b></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><span style="font-size:12.5px;color:#8a8170;">Priority</span><span style="{{ opPrioStyle }}">{{ opPrio }}</span></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12.5px;color:#8a8170;">SLA</span><span style="{{ opSlaStyle }}">{{ opSla }}</span></div>
+                  </div>
+                  <sc-if value="{{ opIsResolved }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ opClose }}" style="background:#13716a;color:#fff;border:0;border-radius:11px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(19,113,106,.7);">✓ Review proof &amp; Close</button>
+                  </sc-if>
+                  <sc-if value="{{ opAssigned }}" hint-placeholder-val="{{ false }}">
+                    <div style="border:1px solid #d7e7d4;background:#f3f9f4;border-radius:11px;padding:12px;font-size:12.5px;color:#3a6b4a;">Assigned to <b>{{ opAssignee }}</b> · SLA clock running.</div>
+                  </sc-if>
+                  <sc-if value="{{ opNotAssigned }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ opAssign }}" style="background:#fff;color:#2b2620;border:1.5px solid #13716a;border-radius:11px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;width:100%;">🚚 Assign to field crew</button>
+                  </sc-if>
+                  <div style="border:1px solid #e6dcc8;border-radius:13px;padding:14px;">
+                    <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:9px;">Audit history</div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <sc-for list="{{ opHistory }}" as="h" hint-placeholder-count="4">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#4a443c;font-weight:600;">{{ h.k }}</span><span style="color:#9a9183;font-family:'Spline Sans Mono',monospace;">{{ h.v }}</span></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- =================== FIELD =================== -->
+      <sc-if value="{{ showField }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:nivpop .25s ease both;padding:26px 16px 40px;display:flex;justify-content:center;">
+          <div style="width:390px;max-width:100%;background:#fbf8f2;border:1px solid #ddd4c2;border-radius:30px;box-shadow:0 24px 60px -28px rgba(43,38,32,.5);overflow:hidden;">
+            <!-- mobile status bar -->
+            <div style="background:#0c544b;color:#fff;padding:13px 18px 12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-family:'Spline Sans Mono',monospace;font-size:11px;opacity:.85;"><span>9:41</span><span>📶 4G · 🔋</span></div>
+              <div style="display:flex;align-items:center;gap:9px;margin-top:9px;">
+                <div style="width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:15px;">🦺</div>
+                <div><div style="font-weight:700;font-size:14px;">Field crew app</div><div style="font-size:11px;opacity:.8;">Suresh · Crew 7</div></div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10.5px;background:rgba(255,255,255,.15);border-radius:12px;padding:4px 9px;"><span style="width:6px;height:6px;border-radius:50%;background:#9ee6c4;display:inline-block;"></span>Online</div>
+              </div>
+            </div>
+
+            <!-- LIST -->
+            <sc-if value="{{ fList }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px;">
+                <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:11px;">My jobs · {{ fieldCount }}</div>
+                <div style="display:flex;flex-direction:column;gap:11px;">
+                  <sc-for list="{{ fieldJobs }}" as="g" hint-placeholder-count="2">
+                    <button onClick="{{ g.open }}" style="display:block;width:100%;text-align:left;background:#fff;border:1px solid #e6dcc8;border-radius:15px;padding:14px;cursor:pointer;">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:21px;">{{ g.icon }}</span>
+                        <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14.5px;">{{ g.title }}</div><div style="font-size:12px;color:#8a8170;">{{ g.id }} · {{ g.area }}</div></div>
+                        <span style="{{ g.prioStyle }}">{{ g.prio }}</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;margin-top:11px;">
+                        <span style="{{ g.statusStyle }}">{{ g.status }}</span>
+                        <span style="{{ g.slaStyle }}">{{ g.slaLabel }}</span>
+                        <span style="margin-left:auto;font-size:12px;color:#0c6157;font-weight:600;">Open ›</span>
+                      </div>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ fieldEmpty }}" hint-placeholder-val="{{ false }}">
+                    <div style="text-align:center;color:#9a9183;font-size:13px;padding:30px 0;">✓ All jobs cleared. New assignments appear here.</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- JOB -->
+            <sc-if value="{{ fJob }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:16px;">
+                <button onClick="{{ fieldBack }}" style="background:none;border:0;color:#0c6157;font-weight:600;font-size:13px;cursor:pointer;padding:0;margin-bottom:12px;">← My jobs</button>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                  <span style="font-size:26px;">{{ fjIcon }}</span>
+                  <div style="flex:1;"><div style="font-weight:700;font-size:16px;">{{ fjTitle }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:12px;color:#8a8170;">{{ fjId }}</div></div>
+                  <span style="{{ fjPrioStyle }}">{{ fjPrio }}</span>
+                </div>
+                <div style="display:flex;gap:8px;margin-bottom:13px;"><span style="{{ fjStatusStyle }}">{{ fjStatus }}</span><span style="{{ fjSlaStyle }}">{{ fjSla }}</span></div>
+                <div style="height:108px;border-radius:13px;background:repeating-linear-gradient(45deg,#e8e2d4,#e8e2d4 7px,#f1ece1 7px,#f1ece1 14px);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:11px;"><span style="font-size:26px;">📍</span><button style="position:absolute;bottom:9px;right:9px;background:#fff;border:1px solid #e0d8c9;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;">🧭 Navigate</button></div>
+                <div style="background:#fff;border:1px solid #e6dcc8;border-radius:11px;padding:11px 13px;font-size:13px;color:#4a443c;line-height:1.45;margin-bottom:14px;">{{ fjDesc }}</div>
+
+                <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:8px;">Update status</div>
+                <div style="display:flex;gap:9px;margin-bottom:13px;">
+                  <button onClick="{{ fieldInProgress }}" style="{{ fjProgressStyle }}">🛠 On site / In progress</button>
+                </div>
+                <textarea placeholder="Add a work note…" style="width:100%;min-height:56px;border:1px solid #e0d8c9;border-radius:11px;padding:11px 13px;font-size:13.5px;background:#fcfaf5;outline:none;resize:vertical;margin-bottom:11px;"></textarea>
+                <div style="display:flex;align-items:center;gap:10px;border:1px dashed #cdc4b2;border-radius:11px;padding:11px 13px;margin-bottom:14px;background:#fcfaf5;">
+                  <span style="font-size:18px;">📷</span><div style="flex:1;"><div style="font-weight:600;font-size:13px;">Upload proof photo</div><div style="font-size:11.5px;color:#9a9183;">Required to mark resolved</div></div>
+                </div>
+                <button onClick="{{ fieldResolve }}" style="{{ fjResolveStyle }}">✓ Mark Resolved</button>
+                <div style="text-align:center;font-size:11px;color:#9a9183;margin-top:9px;">Saves offline · syncs when back online</div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- =================== SUPERVISOR =================== -->
+      <sc-if value="{{ showSupervisor }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:nivpop .25s ease both;padding:20px 24px 36px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+            <div><div style="font-weight:800;font-size:18px;">SLA dashboard</div><div style="font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:#8a8170;">{{ supScope }} · Meera</div></div>
+            <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e6dcc8;border-radius:9px;padding:8px 13px;font-size:12.5px;font-weight:600;">This week ▾</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e6dcc8;border-radius:9px;padding:8px 13px;font-size:12.5px;font-weight:600;">⬇ Export</span>
+          </div>
+          <!-- KPIs -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+            <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;"><div style="font-size:30px;font-weight:800;color:#0c6157;letter-spacing:-.02em;">{{ kpiOnTime }}</div><div style="font-size:12px;color:#8a8170;margin-top:2px;">On-time resolution</div><div style="font-size:10.5px;color:#9a9183;">North-star · target ≥70%</div></div>
+            <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;"><div style="font-size:30px;font-weight:800;letter-spacing:-.02em;">{{ kpiOpen }}</div><div style="font-size:12px;color:#8a8170;margin-top:2px;">Open grievances</div><div style="font-size:10.5px;color:#9a9183;">live across zone</div></div>
+            <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;"><div style="font-size:30px;font-weight:800;letter-spacing:-.02em;{{ kpiBreachTone }}">{{ kpiBreach }}</div><div style="font-size:12px;color:#8a8170;margin-top:2px;">SLA breaches</div><div style="font-size:10.5px;color:#9a9183;">needs action now</div></div>
+            <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;"><div style="font-size:30px;font-weight:800;letter-spacing:-.02em;color:#bf6a1c;">{{ kpiCsat }}★</div><div style="font-size:12px;color:#8a8170;margin-top:2px;">Citizen CSAT</div><div style="font-size:10.5px;color:#9a9183;">on closed complaints</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:.8fr 1.2fr;gap:14px;">
+            <!-- aging -->
+            <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;">
+              <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:14px;">Aging distribution</div>
+              <div style="display:flex;align-items:flex-end;gap:9px;height:90px;">
+                <sc-for list="{{ agingBars }}" as="b" hint-placeholder-count="5">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;">
+                    <span style="font-size:12px;font-weight:700;margin-bottom:4px;">{{ b.n }}</span>
+                    <div style="{{ b.barStyle }}"></div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:9px;margin-top:7px;">
+                <sc-for list="{{ agingBars }}" as="b" hint-placeholder-count="5">
+                  <span style="flex:1;text-align:center;font-size:9.5px;color:#9a9183;">{{ b.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <!-- escalations -->
+            <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;">
+              <div style="display:flex;align-items:center;margin-bottom:11px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">Escalations &amp; breaches</div><span style="margin-left:auto;font-size:11px;color:#9a9183;">sorted by overdue</span></div>
+              <div style="display:flex;flex-direction:column;gap:9px;">
+                <sc-for list="{{ supRows }}" as="r" hint-placeholder-count="2">
+                  <div style="border:1px solid #f0e7d8;border-radius:11px;padding:11px 13px;">
+                    <div style="display:flex;align-items:center;gap:9px;">
+                      <div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:7px;"><b style="font-size:13.5px;">{{ r.id }}</b><span style="{{ r.prioStyle }}">{{ r.prio }}</span></div><div style="font-size:12px;color:#8a8170;">{{ r.title }} · {{ r.dept }}</div></div>
+                      <span style="{{ r.overStyle }}">{{ r.over }}</span>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                      <button onClick="{{ r.reassign }}" style="flex:1;background:#fff;border:1px solid #ddd4c2;border-radius:9px;padding:8px;font-weight:600;font-size:12.5px;cursor:pointer;">🔁 Reassign</button>
+                      <button onClick="{{ r.escalate }}" style="flex:1;background:#fbe6df;border:1px solid #e6b3a6;color:#b34128;border-radius:9px;padding:8px;font-weight:600;font-size:12.5px;cursor:pointer;">⚡ Escalate to senior</button>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ supEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;color:#2f7d4f;font-size:13px;padding:20px 0;">✓ No breaches or escalations right now.</div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- =================== ADMIN =================== -->
+      <sc-if value="{{ showAdmin }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:nivpop .25s ease both;padding:20px 24px 36px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+            <div><div style="font-weight:800;font-size:18px;">Category &amp; SLA taxonomy</div><div style="font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:#8a8170;">Single source of truth for AI routing + SLA clocks</div></div>
+            <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;background:#13716a;color:#fff;border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:600;cursor:pointer;">＋ New category</span>
+          </div>
+          <div style="border:1px solid #e6dcc8;border-radius:14px;overflow:hidden;">
+            <div style="display:flex;background:#f2ede3;padding:10px 16px;font-family:'Spline Sans Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#8a8170;">
+              <span style="flex:2.2;">Category</span><span style="flex:2;">Owning department</span><span style="flex:.8;">Priority</span><span style="flex:1.4;">SLA ack / resolve</span><span style="flex:1.8;">AI keywords</span><span style="width:60px;"></span>
+            </div>
+            <sc-for list="{{ adminRows }}" as="c" hint-placeholder-count="8">
+              <div style="border-top:1px solid #f1ece1;{{ c.rowBg }}">
+                <div style="display:flex;align-items:center;padding:11px 16px;font-size:13px;">
+                  <span style="flex:2.2;display:flex;align-items:center;gap:8px;"><span style="font-size:17px;">{{ c.icon }}</span><b>{{ c.label }}</b></span>
+                  <span style="flex:2;color:#4a443c;">{{ c.dept }}</span>
+                  <span style="flex:.8;"><span style="{{ c.prioStyle }}">{{ c.prio }}</span></span>
+                  <span style="flex:1.4;font-family:'Spline Sans Mono',monospace;font-size:12px;color:#4a443c;">{{ c.sla }}</span>
+                  <span style="flex:1.8;font-size:11.5px;color:#9a9183;">{{ c.keywords }}</span>
+                  <span style="width:60px;text-align:right;"><button onClick="{{ c.edit }}" style="background:#fff;border:1px solid #e0d8c9;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;">✎ Edit</button></span>
+                </div>
+                <sc-if value="{{ c.editing }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:0 16px 14px;display:flex;gap:9px;flex-wrap:wrap;align-items:center;">
+                    <span style="font-size:11px;color:#9a9183;font-family:'Spline Sans Mono',monospace;">EDIT →</span>
+                    <span style="background:#fff;border:1px solid #e0d8c9;border-radius:8px;padding:7px 11px;font-size:12.5px;">Dept: {{ c.dept }} ▾</span>
+                    <span style="background:#fff;border:1px solid #e0d8c9;border-radius:8px;padding:7px 11px;font-size:12.5px;">Priority: {{ c.prio }} ▾</span>
+                    <span style="background:#fff;border:1px solid #e0d8c9;border-radius:8px;padding:7px 11px;font-size:12.5px;">SLA: {{ c.sla }}</span>
+                    <button onClick="{{ adminSaveEdit }}" style="background:#13716a;color:#fff;border:0;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;">Save</button>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:14px;font-size:12px;color:#9a9183;background:#faf6ee;border:1px dashed #e3dac9;border-radius:11px;padding:11px 14px;">Each category maps to exactly one owning department (MVP assumption). Priority sets queue order; the ack/resolve targets drive the SLA clock and escalation thresholds.</div>
+        </div>
+      </sc-if>
 
     </div>
   </div>
@@ -799,7 +1068,161 @@ class Component extends DCLogic {
     });
   }
 
-  roleVMs(out) { /* filled in operator/field/supervisor/admin step */ }
+  prioRank(p) { return { P1: 0, P2: 1, P3: 2, P4: 3 }[p] ?? 4; }
+
+  roleVMs(out) {
+    const s = this.state;
+    const gs = s.grievances;
+    const workStates = ['Submitted', 'Acknowledged', 'Assigned', 'In Progress', 'Reopened'];
+
+    // ===== OPERATOR =====
+    out.oQueue = s.oScreen === 'queue';
+    out.oDetail = s.oScreen === 'detail';
+    out.opBack = this.opBack;
+
+    let queue = gs.filter(g => workStates.includes(g.status) || g.status === 'Resolved');
+    const f = s.queueFilter;
+    let fq = queue;
+    if (f === 'unassigned') fq = queue.filter(g => g.assignee === '—');
+    else if (f === 'review') fq = queue.filter(g => g.lowConf);
+    else if (f === 'close') fq = queue.filter(g => g.status === 'Resolved');
+    fq = fq.slice().sort((a, b) => {
+      const pr = this.prioRank(a.priority) - this.prioRank(b.priority);
+      if (pr) return pr;
+      const ra = this.remainingMs(a), rb = this.remainingMs(b);
+      return (ra == null ? 1e15 : ra) - (rb == null ? 1e15 : rb);
+    });
+    out.queueFilters = [
+      { k: 'all', label: 'All open', n: queue.length },
+      { k: 'unassigned', label: 'Unassigned', n: queue.filter(g => g.assignee === '—').length },
+      { k: 'review', label: 'Needs review', n: queue.filter(g => g.lowConf).length },
+      { k: 'close', label: 'To close', n: queue.filter(g => g.status === 'Resolved').length },
+    ].map(x => ({ ...x, set: () => this.setQueueFilter(x.k),
+      style: `display:inline-flex;align-items:center;gap:7px;border:0;border-radius:9px;padding:8px 13px;font-size:12.5px;font-weight:600;cursor:pointer;${s.queueFilter === x.k ? 'background:#13716a;color:#fff;' : 'background:#fff;color:#6e665b;border:1px solid #e6dcc8;'}` }));
+    out.queueCount = fq.length;
+    out.queueRows = fq.map(g => {
+      const sv = this.slaView(g);
+      return { id: g.id, title: g.title, icon: g.icon, area: g.area + ', ' + g.ward, channel: g.channel,
+        prio: g.priority, prioStyle: this.prioBadge(g.priority),
+        status: g.status, statusStyle: this.statusBadge(g.status),
+        slaLabel: sv.label, slaStyle: this.slaBadge(sv),
+        aiLine: g.lowConf ? ('AI low confidence · ' + g.aiConf + '%') : ('AI · ' + g.aiDept + ' · ' + g.aiConf + '%'),
+        lowConf: g.lowConf, dup: g.dupCount > 0, dupLabel: '⧉ +' + g.dupCount + ' duplicates',
+        rowBorder: sv.tone === 'breach' ? 'border-color:#e6b3a6;' : (g.lowConf ? 'border-color:#dcd3c2;border-style:dashed;' : 'border-color:#e6dcc8;'),
+        open: () => this.openOp(g.id) };
+    });
+
+    const og = this.g(s.opActiveId);
+    if (og) {
+      const sv = this.slaView(og);
+      out.opId = og.id; out.opTitle = og.title; out.opIcon = og.icon;
+      out.opStatus = og.status; out.opStatusStyle = this.statusBadge(og.status);
+      out.opDesc = og.desc; out.opArea = og.area + ', ' + og.ward;
+      out.opCitizen = og.citizenName + ' · ' + og.citizenMobile + ' · via ' + og.channel;
+      out.opAiCat = og.aiCatLabel; out.opAiDept = og.aiDept; out.opAiPrio = og.aiPrio;
+      out.opAiPrioStyle = this.prioBadge(og.aiPrio); out.opAiConf = og.aiConf;
+      out.opConfTone = og.lowConf ? 'color:#c0492f;' : 'color:#0c6157;';
+      out.opDept = og.dept; out.opPrioStyle = this.prioBadge(og.priority); out.opPrio = og.priority;
+      out.opSla = sv.label; out.opSlaStyle = this.slaBadge(sv);
+      out.opHasDup = og.dupCount > 0; out.opDupLabel = '⧉ Merge ' + og.dupCount + ' duplicates';
+      out.opAssigned = og.assignee !== '—'; out.opAssignee = og.assignee;
+      out.opNotAssigned = og.assignee === '—' && og.status !== 'Resolved';
+      out.opIsResolved = og.status === 'Resolved';
+      out.opLowConf = og.lowConf;
+      out.opHistory = Object.keys(og.times).map(k => ({ k, v: og.times[k] }));
+      out.opAcceptAI = () => this.opAcceptAI(og.id);
+      out.opOverride = () => this.opOverride(og.id);
+      out.opMerge = () => this.opMerge(og.id);
+      out.opAssign = () => this.opAssign(og.id);
+      out.opClose = () => this.opClose(og.id);
+    }
+
+    // ===== FIELD =====
+    out.fList = s.fScreen === 'list'; out.fJob = s.fScreen === 'job';
+    out.fieldBack = this.fieldBack;
+    const crew = 'Crew 7';
+    const myJobs = gs.filter(g => g.crew === crew && ['Assigned', 'In Progress'].includes(g.status));
+    out.fieldCount = myJobs.length;
+    out.fieldJobs = myJobs.map(g => {
+      const sv = this.slaView(g);
+      return { id: g.id, title: g.title, icon: g.icon, area: g.area + ', ' + g.ward,
+        prio: g.priority, prioStyle: this.prioBadge(g.priority),
+        status: g.status, statusStyle: this.statusBadge(g.status),
+        slaLabel: sv.label, slaStyle: this.slaBadge(sv),
+        open: () => this.openField(g.id) };
+    });
+    out.fieldEmpty = myJobs.length === 0;
+    const fg = this.g(s.fActiveId);
+    if (fg) {
+      const sv = this.slaView(fg);
+      out.fjId = fg.id; out.fjTitle = fg.title; out.fjIcon = fg.icon;
+      out.fjArea = fg.area + ', ' + fg.ward; out.fjDesc = fg.desc;
+      out.fjPrioStyle = this.prioBadge(fg.priority); out.fjPrio = fg.priority;
+      out.fjStatus = fg.status; out.fjStatusStyle = this.statusBadge(fg.status);
+      out.fjSla = sv.label; out.fjSlaStyle = this.slaBadge(sv);
+      out.fjIsProgress = fg.status === 'In Progress';
+      out.fjCanResolve = fg.status === 'In Progress';
+      out.fieldInProgress = () => this.fieldInProgress(fg.id);
+      out.fieldResolve = () => this.fieldResolve(fg.id);
+      out.fjProgressStyle = fg.status === 'In Progress'
+        ? 'flex:1;background:#dff0ea;color:#0c6157;border:1.5px solid #13716a;border-radius:11px;padding:12px;font-weight:600;font-size:13.5px;cursor:default;'
+        : 'flex:1;background:#fff;color:#2b2620;border:1.5px solid #e6dcc8;border-radius:11px;padding:12px;font-weight:600;font-size:13.5px;cursor:pointer;';
+      out.fjResolveStyle = fg.status === 'In Progress'
+        ? 'width:100%;background:#13716a;color:#fff;border:0;border-radius:11px;padding:14px;font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(19,113,106,.7);'
+        : 'width:100%;background:#cfc6b4;color:#fff;border:0;border-radius:11px;padding:14px;font-weight:700;font-size:14.5px;cursor:not-allowed;';
+    }
+
+    // ===== SUPERVISOR =====
+    const open = gs.filter(g => g.status !== 'Closed');
+    const openWork = gs.filter(g => workStates.includes(g.status));
+    const breaches = openWork.filter(g => { const r = this.remainingMs(g); return r != null && r < 0; });
+    const rated = gs.filter(g => g.rating);
+    const csat = rated.length ? (rated.reduce((a, g) => a + g.rating, 0) / rated.length) : 0;
+    out.kpiOnTime = '88%';
+    out.kpiOpen = String(openWork.length);
+    out.kpiBreach = String(breaches.length);
+    out.kpiCsat = csat ? csat.toFixed(1) : '—';
+    out.kpiBreachTone = breaches.length > 0 ? 'color:#c0492f;' : 'color:#2f7d4f;';
+    // aging buckets
+    const buckets = [
+      { label: '<24h', n: 0, c: '#bfe0d6' }, { label: '1–2d', n: 0, c: '#a9d6c8' },
+      { label: '3–5d', n: 0, c: '#e8c47e' }, { label: 'at risk', n: 0, c: '#e0a96b' }, { label: 'breached', n: 0, c: '#d98e7a' },
+    ];
+    openWork.forEach(g => {
+      const r = this.remainingMs(g);
+      if (r == null) buckets[0].n++;
+      else if (r < 0) buckets[4].n++;
+      else if (r < 2 * 3600000) buckets[3].n++;
+      else if (r < 24 * 3600000) buckets[0].n++;
+      else if (r < 48 * 3600000) buckets[1].n++;
+      else buckets[2].n++;
+    });
+    const maxB = Math.max(1, ...buckets.map(b => b.n));
+    out.agingBars = buckets.map(b => ({ label: b.label, n: b.n,
+      barStyle: `width:100%;border-radius:6px 6px 0 0;background:${b.c};height:${10 + Math.round(b.n / maxB * 64)}px;` }));
+    // escalations & breaches list
+    const flagged = openWork.filter(g => g.escalated || (this.remainingMs(g) != null && this.remainingMs(g) < 0))
+      .sort((a, b) => (this.remainingMs(a) ?? 0) - (this.remainingMs(b) ?? 0));
+    out.supEmpty = flagged.length === 0;
+    out.supRows = flagged.map(g => {
+      const r = this.remainingMs(g);
+      const over = r != null && r < 0 ? this.fmtDur(-r) + ' over' : (g.escalated ? 'escalated' : 'at risk');
+      return { id: g.id, title: g.title, dept: g.dept, prio: g.priority, prioStyle: this.prioBadge(g.priority),
+        over, overStyle: `display:inline-flex;align-items:center;font-family:'Spline Sans Mono',monospace;font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:16px;color:#c0492f;background:#fbe6df;`,
+        escalated: g.escalated,
+        reassign: () => this.supReassign(g.id), escalate: () => this.supEscalate(g.id) };
+    });
+    out.supScope = 'Water & Sewerage · Zone 3';
+
+    // ===== ADMIN =====
+    out.adminRows = s.categories.map(c => ({
+      id: c.id, label: c.label, icon: c.icon, dept: c.dept,
+      prio: c.priority, prioStyle: this.prioBadge(c.priority),
+      sla: c.slaAck + ' / ' + c.slaResolve, keywords: c.keywords.slice(0, 3).join(', '),
+      editing: s.adminEditId === c.id, edit: () => this.adminEdit(c.id),
+      rowBg: s.adminEditId === c.id ? 'background:#f3f9f6;' : 'background:#fff;' }));
+    out.adminSaveEdit = () => { this.setState({ adminEditId: null }); this.toast('Category SLA updated — applies to new grievances', '✓'); };
+  }
 }
 
 // ============ SEED DATA ============
