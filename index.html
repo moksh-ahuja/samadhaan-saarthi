@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:#e7e0d4;color:#2b2620;font-family:"Hanken Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;}
+  input,textarea,select{font-family:inherit;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:#cfc6b4;border-radius:8px;border:2px solid #f4efe6;}
+  @keyframes nivpop{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:none;}}
+  @keyframes nivtoast{from{opacity:0;transform:translate(-50%,12px);}to{opacity:1;transform:translate(-50%,0);}}
+  @keyframes nivpulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  @keyframes nivspin{to{transform:rotate(360deg);}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(120% 80% at 50% -10%, #efe9dd 0%, #e7e0d4 55%, #e1d9cb 100%);padding:18px 18px 40px;">
+
+  <!-- ======= STAGE BAR / ROLE SWITCHER ======= -->
+  <div style="max-width:1240px;margin:0 auto 14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:11px;">
+      <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(150deg,#15756a,#0c544b);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px -4px rgba(12,84,75,.5);position:relative;">
+        <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:12px solid #ecb94e;"></div>
+      </div>
+      <div style="line-height:1.05;">
+        <div style="font-weight:800;font-size:16px;letter-spacing:-.01em;">Samadhaan Saarthi</div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:#8a8170;letter-spacing:.02em;">समाधान सारथी · Nivaran grievance platform</div>
+      </div>
+      <span style="margin-left:4px;font-family:'Spline Sans Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:.12em;color:#b08a2a;background:#f8eed4;border:1px solid #ecd9a8;border-radius:5px;padding:3px 6px;">PROTOTYPE</span>
+    </div>
+
+    <div style="margin-left:auto;display:flex;align-items:center;gap:6px;background:#fbf8f2;border:1px solid #e3dac9;border-radius:13px;padding:5px;box-shadow:0 1px 2px rgba(43,38,32,.05);">
+      <sc-for list="{{ roleTabs }}" as="r" hint-placeholder-count="5">
+        <button onClick="{{ r.go }}" style="{{ r.style }}" title="{{ r.sub }}">
+          <span style="font-size:14px;line-height:1;">{{ r.icon }}</span>
+          <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;">
+            <span style="font-weight:600;font-size:12.5px;">{{ r.label }}</span>
+            <span style="font-size:9.5px;opacity:.7;">{{ r.who }}</span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ======= BROWSER WINDOW ======= -->
+  <div style="max-width:1240px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(43,38,32,.06),0 30px 60px -30px rgba(43,38,32,.4);border:1px solid #ddd4c2;">
+    <div style="height:42px;background:#f2ede3;border-bottom:1px solid #e3dac9;display:flex;align-items:center;gap:8px;padding:0 14px;">
+      <div style="display:flex;gap:7px;">
+        <span style="width:11px;height:11px;border-radius:50%;background:#e6857a;"></span>
+        <span style="width:11px;height:11px;border-radius:50%;background:#e8c47e;"></span>
+        <span style="width:11px;height:11px;border-radius:50%;background:#9ec79a;"></span>
+      </div>
+      <div style="margin-left:10px;flex:1;max-width:520px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e3dac9;border-radius:8px;padding:5px 11px;">
+        <span style="color:#7aa39b;font-size:11px;">🔒</span>
+        <span style="font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:#7d7565;">{{ browserUrl }}</span>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <sc-if value="{{ showLang }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ toggleLang }}" style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e3dac9;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;color:#2b2620;cursor:pointer;">🌐 {{ langLabel }}</button>
+        </sc-if>
+        <div style="width:26px;height:26px;border-radius:50%;background:{{ avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">{{ avatarChar }}</div>
+      </div>
+    </div>
+
+    <!-- VIEWPORT -->
+    <div style="background:{{ viewportBg }};min-height:660px;max-height:78vh;overflow:auto;" key="{{ viewportKey }}">
+
+      <!-- =================== CITIZEN =================== -->
+      <sc-if value="{{ showCitizen }}" hint-placeholder-val="{{ true }}">
+        <div style="animation:nivpop .25s ease both;">
+
+          <!-- top nav (citizen) -->
+          <div style="position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:14px;padding:13px 26px;background:rgba(251,248,242,.92);backdrop-filter:blur(8px);border-bottom:1px solid #ece4d4;">
+            <button onClick="{{ goCitizenHome }}" style="display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;padding:0;">
+              <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(150deg,#15756a,#0c544b);display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:8px solid #ecb94e;"></div></div>
+              <span style="font-weight:800;font-size:15px;">{{ tx.brand }}</span>
+            </button>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+              <button onClick="{{ goCitizenHome }}" style="{{ cNavHome }}">{{ tx.navHome }}</button>
+              <button onClick="{{ goTrack }}" style="{{ cNavTrack }}">{{ tx.navTrack }}</button>
+            </div>
+          </div>
+
+          <!-- ---- HOME ---- -->
+          <sc-if value="{{ cHome }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:34px 26px 40px;max-width:1000px;margin:0 auto;">
+              <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:center;background:linear-gradient(135deg,#13716620,#ecb94e14);border:1px solid #e6dcc8;border-radius:22px;padding:34px;">
+                <div>
+                  <div style="display:inline-flex;align-items:center;gap:7px;font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.06em;color:#0c6157;background:#dff0ea;border:1px solid #bfe0d6;border-radius:20px;padding:5px 11px;margin-bottom:16px;">● {{ tx.live }}</div>
+                  <h1 style="font-size:36px;line-height:1.08;letter-spacing:-.02em;margin:0 0 12px;font-weight:800;">{{ tx.heroTitle }}</h1>
+                  <p style="font-size:16px;line-height:1.5;color:#6e665b;margin:0 0 24px;max-width:46ch;">{{ tx.heroSub }}</p>
+                  <div style="display:flex;gap:11px;flex-wrap:wrap;">
+                    <button onClick="{{ startSubmit }}" style="display:inline-flex;align-items:center;gap:9px;background:#13716a;color:#fff;border:0;border-radius:12px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px -8px rgba(19,113,106,.7);">＋ {{ tx.report }}</button>
+                    <button onClick="{{ goTrack }}" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#2b2620;border:1px solid #ddd4c2;border-radius:12px;padding:14px 22px;font-weight:600;font-size:15px;cursor:pointer;">{{ tx.track }}</button>
+                  </div>
+                  <div style="margin-top:24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:#9a9183;text-transform:uppercase;letter-spacing:.06em;">{{ tx.alsoOn }}</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e3dac9;border-radius:18px;padding:5px 11px;font-size:12.5px;font-weight:600;">💬 WhatsApp</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e3dac9;border-radius:18px;padding:5px 11px;font-size:12.5px;font-weight:600;">📞 1916</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e3dac9;border-radius:18px;padding:5px 11px;font-size:12.5px;font-weight:600;">🏛 {{ tx.walkin }}</span>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #e6dcc8;border-radius:16px;padding:18px;box-shadow:0 12px 30px -16px rgba(43,38,32,.3);">
+                  <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#9a9183;margin-bottom:12px;">{{ tx.promise }}</div>
+                  <div style="display:flex;flex-direction:column;gap:13px;">
+                    <div style="display:flex;gap:11px;align-items:flex-start;"><span style="font-size:17px;">🎫</span><div><div style="font-weight:700;font-size:13.5px;">{{ tx.p1t }}</div><div style="font-size:12px;color:#6e665b;">{{ tx.p1s }}</div></div></div>
+                    <div style="display:flex;gap:11px;align-items:flex-start;"><span style="font-size:17px;">🏢</span><div><div style="font-weight:700;font-size:13.5px;">{{ tx.p2t }}</div><div style="font-size:12px;color:#6e665b;">{{ tx.p2s }}</div></div></div>
+                    <div style="display:flex;gap:11px;align-items:flex-start;"><span style="font-size:17px;">⏱</span><div><div style="font-weight:700;font-size:13.5px;">{{ tx.p3t }}</div><div style="font-size:12px;color:#6e665b;">{{ tx.p3s }}</div></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:26px;">
+                <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9a9183;margin-bottom:11px;">{{ tx.common }}</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                  <sc-for list="{{ quickCats }}" as="q" hint-placeholder-count="4">
+                    <button onClick="{{ q.go }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:transform .12s,box-shadow .12s;" style-hover="transform:translateY(-2px);box-shadow:0 10px 22px -14px rgba(43,38,32,.4);">
+                      <span style="font-size:24px;">{{ q.icon }}</span>
+                      <span style="font-weight:700;font-size:14px;">{{ q.label }}</span>
+                      <span style="font-size:11.5px;color:#8a8170;">{{ q.dept }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ---- SUBMIT (multi-step) ---- -->
+          <sc-if value="{{ cSubmit }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:26px 26px 44px;max-width:760px;margin:0 auto;">
+              <!-- stepper -->
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:22px;">
+                <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:6px;flex:1;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;{{ s.dotStyle }}">{{ s.mark }}</div>
+                      <span style="font-size:12px;font-weight:600;{{ s.labStyle }}">{{ s.label }}</span>
+                    </div>
+                    <div style="flex:1;height:2px;border-radius:2px;{{ s.lineStyle }}"></div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <!-- STEP 1: describe -->
+              <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ false }}">
+                <div style="animation:nivpop .2s ease both;">
+                  <h2 style="font-size:23px;margin:0 0 5px;letter-spacing:-.01em;">{{ tx.s1title }}</h2>
+                  <p style="color:#6e665b;margin:0 0 20px;font-size:14.5px;">{{ tx.s1sub }}</p>
+                  <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9a9183;margin-bottom:9px;">{{ tx.whatKind }}</div>
+                  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:20px;">
+                    <sc-for list="{{ catChoices }}" as="c" hint-placeholder-count="8">
+                      <button onClick="{{ c.pick }}" style="{{ c.style }}">
+                        <span style="font-size:21px;">{{ c.icon }}</span>
+                        <span style="font-weight:600;font-size:12px;text-align:center;line-height:1.2;">{{ c.label }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                  <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9a9183;margin-bottom:9px;">{{ tx.describe }}</div>
+                  <textarea onInput="{{ onDesc }}" value="{{ draftDesc }}" placeholder="{{ tx.descPh }}" style="width:100%;min-height:96px;resize:vertical;border:1px solid #e0d8c9;border-radius:12px;padding:13px 15px;font-size:14px;color:#2b2620;background:#fcfaf5;outline:none;"></textarea>
+                  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+                    <button onClick="{{ togglePhoto }}" style="{{ photoStyle }}">📷 {{ photoLabel }}</button>
+                    <button onClick="{{ toggleVoice }}" style="{{ voiceStyle }}">🎙 {{ voiceLabel }}</button>
+                  </div>
+                  <div style="display:flex;justify-content:flex-end;margin-top:26px;">
+                    <button onClick="{{ toStep2 }}" style="{{ next1Style }}">{{ tx.next }} →</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <!-- STEP 2: AI + location -->
+              <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+                <div style="animation:nivpop .2s ease both;">
+                  <h2 style="font-size:23px;margin:0 0 5px;letter-spacing:-.01em;">{{ tx.s2title }}</h2>
+                  <p style="color:#6e665b;margin:0 0 20px;font-size:14.5px;">{{ tx.s2sub }}</p>
+                  <div style="border:1px solid #bfe0d6;background:linear-gradient(135deg,#e7f2ed,#f4f9f6);border-radius:16px;padding:18px;margin-bottom:16px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px;"><span style="font-size:15px;">✦</span><span style="font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#0c6157;">{{ tx.aiSuggests }}</span><span style="margin-left:auto;font-family:'Spline Sans Mono',monospace;font-size:11px;font-weight:600;color:#0c6157;background:#d4ebe2;border-radius:14px;padding:3px 9px;">{{ draftAiConf }}% {{ tx.conf }}</span></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:11px;padding:11px 13px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.category }}</div><div style="font-weight:700;font-size:14.5px;margin-top:2px;">{{ draftCatLabel }}</div></div>
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:11px;padding:11px 13px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.dept }}</div><div style="font-weight:700;font-size:14.5px;margin-top:2px;">{{ draftAiDept }}</div></div>
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:11px;padding:11px 13px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.priority }}</div><div style="margin-top:4px;"><span style="{{ draftPrioStyle }}">{{ draftAiPrio }}</span></div></div>
+                      <div style="background:#fff;border:1px solid #d7ebe3;border-radius:11px;padding:11px 13px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.target }}</div><div style="font-weight:700;font-size:14.5px;margin-top:2px;">{{ draftSla }}</div></div>
+                    </div>
+                    <button onClick="{{ openCatPicker }}" style="margin-top:12px;background:#fff;border:1px solid #c8e0d8;color:#0c6157;border-radius:9px;padding:8px 13px;font-size:12.5px;font-weight:600;cursor:pointer;">✎ {{ tx.notRight }}</button>
+                  </div>
+                  <div style="border:1px solid #e0d8c9;border-radius:14px;overflow:hidden;">
+                    <div style="height:120px;background:repeating-linear-gradient(45deg,#e8e2d4,#e8e2d4 7px,#f1ece1 7px,#f1ece1 14px);display:flex;align-items:center;justify-content:center;position:relative;"><span style="font-size:30px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25));">📍</span><span style="position:absolute;bottom:9px;left:11px;font-family:'Spline Sans Mono',monospace;font-size:10px;color:#7d7565;background:#fffd;border-radius:6px;padding:3px 7px;">GPS · auto-located</span></div>
+                    <div style="padding:11px 14px;display:flex;align-items:center;gap:10px;"><span style="font-size:13px;">📌</span><div style="flex:1;"><div style="font-weight:600;font-size:13.5px;">{{ draftArea }}, {{ draftWard }}</div><div style="font-size:11.5px;color:#8a8170;">{{ tx.adjustPin }}</div></div></div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-top:26px;"><button onClick="{{ backStep }}" style="{{ ghostBtn }}">← {{ tx.back }}</button><button onClick="{{ toStep3 }}" style="{{ primBtn }}">{{ tx.next }} →</button></div>
+                </div>
+              </sc-if>
+
+              <!-- STEP 3: details -->
+              <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+                <div style="animation:nivpop .2s ease both;">
+                  <h2 style="font-size:23px;margin:0 0 5px;letter-spacing:-.01em;">{{ tx.s3title }}</h2>
+                  <p style="color:#6e665b;margin:0 0 20px;font-size:14.5px;">{{ tx.s3sub }}</p>
+                  <div style="display:flex;flex-direction:column;gap:15px;">
+                    <div><div style="font-weight:600;font-size:13px;margin-bottom:6px;">{{ tx.mobile }} <span style="color:#c0492f;">*</span></div><input onInput="{{ onMobile }}" value="{{ draftMobile }}" placeholder="98xxxxxxxx" style="width:100%;border:1px solid #e0d8c9;border-radius:11px;padding:12px 14px;font-size:14.5px;background:#fcfaf5;outline:none;"></div>
+                    <div><div style="font-weight:600;font-size:13px;margin-bottom:6px;">{{ tx.name }} <span style="color:#9a9183;font-weight:400;">{{ tx.optional }}</span></div><input onInput="{{ onName }}" value="{{ draftName }}" placeholder="{{ tx.namePh }}" style="width:100%;border:1px solid #e0d8c9;border-radius:11px;padding:12px 14px;font-size:14.5px;background:#fcfaf5;outline:none;"></div>
+                    <div><div style="font-weight:600;font-size:13px;margin-bottom:8px;">{{ tx.updatesOn }}</div>
+                      <div style="display:flex;gap:9px;flex-wrap:wrap;">
+                        <sc-for list="{{ channelChoices }}" as="ch" hint-placeholder-count="3">
+                          <button onClick="{{ ch.pick }}" style="{{ ch.style }}">{{ ch.icon }} {{ ch.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-top:28px;"><button onClick="{{ backStep }}" style="{{ ghostBtn }}">← {{ tx.back }}</button><button onClick="{{ toStep4 }}" style="{{ next3Style }}">{{ tx.review }} →</button></div>
+                </div>
+              </sc-if>
+
+              <!-- STEP 4: review -->
+              <sc-if value="{{ isStep4 }}" hint-placeholder-val="{{ false }}">
+                <div style="animation:nivpop .2s ease both;">
+                  <h2 style="font-size:23px;margin:0 0 5px;letter-spacing:-.01em;">{{ tx.s4title }}</h2>
+                  <p style="color:#6e665b;margin:0 0 20px;font-size:14.5px;">{{ tx.s4sub }}</p>
+                  <div style="border:1px solid #e6dcc8;border-radius:16px;overflow:hidden;">
+                    <div style="background:#faf6ee;padding:15px 18px;border-bottom:1px solid #ece4d4;display:flex;align-items:center;gap:11px;"><span style="font-size:22px;">{{ draftIcon }}</span><div style="flex:1;"><div style="font-weight:700;font-size:16px;">{{ draftCatLabel }}</div><div style="font-size:12.5px;color:#8a8170;">{{ draftAiDept }} · {{ draftArea }}, {{ draftWard }}</div></div><span style="{{ draftPrioStyle }}">{{ draftAiPrio }}</span></div>
+                    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:13px;">
+                      <div><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;margin-bottom:3px;">{{ tx.describe }}</div><div style="font-size:13.5px;line-height:1.5;color:#4a443c;">{{ draftDescShown }}</div></div>
+                      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <span style="display:inline-flex;align-items:center;gap:5px;background:#f2ede3;border-radius:16px;padding:4px 10px;font-size:11.5px;font-weight:600;">{{ draftAttachLabel }}</span>
+                        <span style="display:inline-flex;align-items:center;gap:5px;background:#f2ede3;border-radius:16px;padding:4px 10px;font-size:11.5px;font-weight:600;">📞 {{ draftChannel }}</span>
+                        <span style="display:inline-flex;align-items:center;gap:5px;background:#f2ede3;border-radius:16px;padding:4px 10px;font-size:11.5px;font-weight:600;">⏱ {{ draftSla }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-top:26px;"><button onClick="{{ backStep }}" style="{{ ghostBtn }}">← {{ tx.back }}</button><button onClick="{{ submitComplaint }}" style="{{ primBtn }}">✓ {{ tx.submitNow }}</button></div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ---- CONFIRMATION ---- -->
+          <sc-if value="{{ cConfirm }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px 26px 50px;max-width:620px;margin:0 auto;text-align:center;animation:nivpop .3s ease both;">
+              <div style="width:74px;height:74px;border-radius:50%;background:#e3f0e6;border:2px solid #aed4b9;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;color:#2f7d4f;">✓</div>
+              <h2 style="font-size:26px;margin:0 0 7px;letter-spacing:-.01em;">{{ tx.recorded }}</h2>
+              <p style="color:#6e665b;margin:0 0 24px;font-size:15px;">{{ tx.recordedSub }}</p>
+              <div style="background:#fff;border:1px solid #e6dcc8;border-radius:18px;padding:22px;box-shadow:0 14px 34px -20px rgba(43,38,32,.4);text-align:left;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:15px;border-bottom:1px dashed #e3dac9;">
+                  <div><div style="font-family:'Spline Sans Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#9a9183;">{{ tx.ticketNo }}</div><div style="font-family:'Spline Sans Mono',monospace;font-weight:600;font-size:24px;color:#0c544b;letter-spacing:.01em;">{{ newId }}</div></div>
+                  <span style="{{ newPrioStyle }}">{{ newPrio }}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:15px;">
+                  <div><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.owner }}</div><div style="font-weight:700;font-size:14.5px;margin-top:2px;">{{ newDept }}</div></div>
+                  <div><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.resolveBy }}</div><div style="font-weight:700;font-size:14.5px;margin-top:2px;color:#0c6157;">{{ newEta }}</div></div>
+                </div>
+                <div style="margin-top:16px;background:#f3f7f2;border:1px solid #d7e7d4;border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:9px;"><span style="font-size:15px;">💬</span><span style="font-size:12.5px;color:#3a6b4a;">{{ tx.updatesVia }} <b>{{ draftChannel }}</b></span></div>
+              </div>
+              <div style="display:flex;gap:11px;justify-content:center;margin-top:22px;flex-wrap:wrap;">
+                <button onClick="{{ trackNew }}" style="{{ primBtn }}">{{ tx.trackThis }}</button>
+                <button onClick="{{ goCitizenHome }}" style="{{ ghostBtn }}">{{ tx.done }}</button>
+              </div>
+              <div style="margin-top:20px;font-size:12.5px;color:#9a9183;background:#faf6ee;border:1px dashed #e3dac9;border-radius:11px;padding:11px 14px;">💡 {{ tx.demoHint }}</div>
+            </div>
+          </sc-if>
+
+          <!-- ---- TRACK LIST ---- -->
+          <sc-if value="{{ cTrack }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:28px 26px 44px;max-width:720px;margin:0 auto;">
+              <h2 style="font-size:24px;margin:0 0 5px;letter-spacing:-.01em;">{{ tx.trackTitle }}</h2>
+              <p style="color:#6e665b;margin:0 0 18px;font-size:14.5px;">{{ tx.trackSub }}</p>
+              <div style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #e0d8c9;border-radius:12px;padding:11px 15px;margin-bottom:20px;"><span>🔎</span><span style="color:#9a9183;font-size:14px;">{{ tx.lookupPh }}</span><span style="margin-left:auto;font-family:'Spline Sans Mono',monospace;font-size:11px;color:#0c6157;background:#dff0ea;border-radius:8px;padding:4px 9px;">98•••••210</span></div>
+              <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9a9183;margin-bottom:11px;">{{ tx.yourComplaints }} · {{ myCount }}</div>
+              <div style="display:flex;flex-direction:column;gap:11px;">
+                <sc-for list="{{ myGrievances }}" as="g" hint-placeholder-count="3">
+                  <button onClick="{{ g.open }}" style="display:block;width:100%;text-align:left;background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:15px 17px;cursor:pointer;transition:box-shadow .12s,transform .12s;" style-hover="box-shadow:0 8px 20px -14px rgba(43,38,32,.4);transform:translateY(-1px);">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:20px;">{{ g.icon }}</span>
+                      <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:15px;">{{ g.title }}</div><div style="font-size:12px;color:#8a8170;">{{ g.id }} · {{ g.dept }} · {{ g.area }}</div></div>
+                      <span style="{{ g.statusStyle }}">{{ g.statusLabel }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:11px;border-top:1px solid #f1ece1;">
+                      <span style="{{ g.slaStyle }}">{{ g.slaLabel }}</span>
+                      <span style="font-size:12px;color:#9a9183;">{{ g.nextLine }}</span>
+                      <span style="margin-left:auto;font-size:12px;color:#0c6157;font-weight:600;">{{ tx.viewDetail }} ›</span>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ---- DETAIL ---- -->
+          <sc-if value="{{ cDetail }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:22px 26px 44px;max-width:720px;margin:0 auto;">
+              <button onClick="{{ goTrack }}" style="background:none;border:0;color:#0c6157;font-weight:600;font-size:13px;cursor:pointer;padding:0;margin-bottom:14px;">← {{ tx.allComplaints }}</button>
+              <div style="display:flex;align-items:flex-start;gap:13px;margin-bottom:16px;">
+                <span style="font-size:30px;">{{ aIcon }}</span>
+                <div style="flex:1;"><h2 style="font-size:22px;margin:0;letter-spacing:-.01em;">{{ aTitle }}</h2><div style="font-family:'Spline Sans Mono',monospace;font-size:12.5px;color:#8a8170;margin-top:3px;">{{ aId }} · {{ aDept }}</div></div>
+                <span style="{{ aStatusStyle }}">{{ aStatusLabel }}</span>
+              </div>
+
+              <sc-if value="{{ aReopenedFlag }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#f0e9f6;border:1px solid #d9c9ea;border-radius:11px;padding:10px 13px;margin-bottom:14px;font-size:12.5px;color:#5d3a85;font-weight:600;">↻ {{ tx.reopenedNote }}</div>
+              </sc-if>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:18px;">
+                <div style="background:#fff;border:1px solid #e6dcc8;border-radius:13px;padding:13px 15px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ tx.owner }}</div><div style="font-weight:700;font-size:14.5px;margin-top:3px;">{{ aDept }}</div><div style="font-size:12px;color:#8a8170;">{{ aAssignee }}</div></div>
+                <div style="background:#fff;border:1px solid #e6dcc8;border-radius:13px;padding:13px 15px;"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#9a9183;">{{ aSlaCaption }}</div><div style="font-weight:700;font-size:14.5px;margin-top:3px;{{ aSlaColor }}">{{ aSlaBig }}</div><div style="font-size:12px;color:#8a8170;">{{ aEta }}</div></div>
+              </div>
+
+              <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9a9183;margin-bottom:12px;">{{ tx.progress }}</div>
+              <div style="display:flex;flex-direction:column;gap:0;margin-bottom:20px;">
+                <sc-for list="{{ aTimeline }}" as="e" hint-placeholder-count="5">
+                  <div style="display:flex;gap:13px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;">
+                      <div style="width:16px;height:16px;border-radius:50%;flex:none;{{ e.dotStyle }}">{{ e.dotMark }}</div>
+                      <div style="width:2px;flex:1;min-height:26px;{{ e.lineStyle }}"></div>
+                    </div>
+                    <div style="padding-bottom:14px;{{ e.fade }}">
+                      <div style="font-weight:700;font-size:13.5px;{{ e.titleColor }}">{{ e.label }}</div>
+                      <div style="font-size:12px;color:#8a8170;">{{ e.sub }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="border:1px solid #e6dcc8;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:11px;margin-bottom:18px;background:#faf6ee;">
+                <div style="width:50px;height:42px;border-radius:8px;background:repeating-linear-gradient(45deg,#e8e2d4,#e8e2d4 5px,#f1ece1 5px,#f1ece1 10px);display:flex;align-items:center;justify-content:center;font-size:16px;">🖼</div>
+                <div><div style="font-weight:600;font-size:13px;">{{ aAttachLabel }}</div><div style="font-size:11.5px;color:#8a8170;">{{ tx.tapToView }}</div></div>
+              </div>
+
+              <!-- citizen action levers -->
+              <sc-if value="{{ aShowActive }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:10px;">
+                  <button onClick="{{ escalateActive }}" style="flex:1;background:#fff;border:1px solid #e6c4bb;color:#b34128;border-radius:11px;padding:12px;font-weight:600;font-size:13.5px;cursor:pointer;">⚡ {{ tx.escalate }}</button>
+                  <button onClick="{{ goTrack }}" style="flex:1;background:#fff;border:1px solid #ddd4c2;color:#2b2620;border-radius:11px;padding:12px;font-weight:600;font-size:13.5px;cursor:pointer;">＋ {{ tx.addInfo }}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ aShowClosed }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#fff;border:1px solid #e6dcc8;border-radius:14px;padding:16px;">
+                  <div style="font-weight:700;font-size:14.5px;margin-bottom:3px;">{{ tx.howDidWeDo }}</div>
+                  <div style="font-size:12.5px;color:#8a8170;margin-bottom:11px;">{{ aRatingLine }}</div>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{ goRate }}" style="flex:1;background:#13716a;color:#fff;border:0;border-radius:11px;padding:12px;font-weight:600;font-size:13.5px;cursor:pointer;">★ {{ tx.rate }}</button>
+                    <button onClick="{{ goReopen }}" style="flex:1;background:#fff;border:1px solid #ddd4c2;color:#2b2620;border-radius:11px;padding:12px;font-weight:600;font-size:13.5px;cursor:pointer;">↻ {{ tx.reopen }}</button>
+                  </div>
+                  <div style="margin-top:10px;font-size:11.5px;color:#9a9183;text-align:center;">{{ aReopenWindow }}</div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- ---- RATE ---- -->
+          <sc-if value="{{ cRate }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px 26px;max-width:520px;margin:0 auto;text-align:center;animation:nivpop .25s ease both;">
+              <button onClick="{{ backToDetail }}" style="background:none;border:0;color:#0c6157;font-weight:600;font-size:13px;cursor:pointer;padding:0;float:left;">← {{ tx.back }}</button>
+              <div style="clear:both;"></div>
+              <h2 style="font-size:24px;margin:14px 0 6px;">{{ tx.howDidWeDo }}</h2>
+              <p style="color:#6e665b;margin:0 0 22px;font-size:14.5px;">{{ aId }} · {{ aTitle }}</p>
+              <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;">
+                <sc-for list="{{ stars }}" as="st" hint-placeholder-count="5">
+                  <button onClick="{{ st.set }}" style="background:none;border:0;font-size:38px;cursor:pointer;line-height:1;{{ st.style }}">★</button>
+                </sc-for>
+              </div>
+              <textarea placeholder="{{ tx.commentPh }}" style="width:100%;min-height:74px;border:1px solid #e0d8c9;border-radius:12px;padding:12px 14px;font-size:14px;background:#fcfaf5;outline:none;resize:vertical;margin-bottom:16px;"></textarea>
+              <button onClick="{{ submitRating }}" style="{{ rateBtnStyle }}">{{ tx.submitRating }}</button>
+            </div>
+          </sc-if>
+
+          <!-- ---- REOPEN ---- -->
+          <sc-if value="{{ cReopen }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:34px 26px;max-width:560px;margin:0 auto;animation:nivpop .25s ease both;">
+              <button onClick="{{ backToDetail }}" style="background:none;border:0;color:#0c6157;font-weight:600;font-size:13px;cursor:pointer;padding:0;margin-bottom:14px;">← {{ tx.back }}</button>
+              <h2 style="font-size:23px;margin:0 0 5px;">{{ tx.reopenTitle }}</h2>
+              <p style="color:#6e665b;margin:0 0 8px;font-size:14.5px;">{{ aId }} · {{ aTitle }}</p>
+              <div style="background:#f0e9f6;border:1px solid #d9c9ea;border-radius:11px;padding:11px 14px;margin-bottom:20px;font-size:12.5px;color:#5d3a85;">↻ {{ tx.reopenExplain }}</div>
+              <div style="font-weight:600;font-size:13px;margin-bottom:9px;">{{ tx.whyReopen }}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+                <sc-for list="{{ reopenReasons }}" as="r" hint-placeholder-count="3">
+                  <button onClick="{{ r.pick }}" style="{{ r.style }}">{{ r.label }}</button>
+                </sc-for>
+              </div>
+              <textarea placeholder="{{ tx.reopenPh }}" style="width:100%;min-height:84px;border:1px solid #e0d8c9;border-radius:12px;padding:12px 14px;font-size:14px;background:#fcfaf5;outline:none;resize:vertical;margin-bottom:18px;"></textarea>
+              <button onClick="{{ submitReopen }}" style="{{ reopenBtnStyle }}">↻ {{ tx.reopenNow }}</button>
+            </div>
+          </sc-if>
+
+        </div>
+      </sc-if>
+
+      <!--ROLE-SCREENS-->
+
+    </div>
+  </div>
+
+  <div style="max-width:1240px;margin:11px auto 0;display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8170;">
+    <span style="font-family:'Spline Sans Mono',monospace;">▸</span>
+    <span>{{ stageHint }}</span>
+  </div>
+
+  <!-- TOAST -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:50;background:#2b2620;color:#fff;border-radius:13px;padding:13px 20px;display:flex;align-items:center;gap:11px;box-shadow:0 16px 40px -12px rgba(0,0,0,.5);animation:nivtoast .25s ease both;max-width:90vw;">
+      <span style="font-size:16px;">{{ toastIcon }}</span>
+      <span style="font-size:13.5px;font-weight:500;">{{ toast }}</span>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  base = Date.now();
+  _t = null;
+
+  state = {
+    role: 'citizen', lang: 'en',
+    cScreen: 'home', step: 1,
+    oScreen: 'queue', fScreen: 'list', sScreen: 'dash', aScreen: 'tax',
+    activeId: null, fActiveId: null, opActiveId: null, adminEditId: null,
+    queueFilter: 'all',
+    csat: 0, reopenReason: null,
+    counter: 5050, tick: 0, toast: null, toastIcon: '✓',
+    draft: { category: null, categoryLabel: '', icon: '📝', desc: '', photo: true, voice: false,
+             ward: 'Ward 12', area: 'MG Road', mobile: '', name: '', channel: 'WhatsApp',
+             aiDept: '', aiPrio: 'P3', aiConf: 0, sla: '' },
+    grievances: SEED_GRIEVANCES(),
+    categories: SEED_CATEGORIES(),
+  };
+
+  componentDidMount() {
+    this._iv = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 1000);
+  }
+  componentWillUnmount() { clearInterval(this._iv); if (this._t) clearTimeout(this._t); }
+
+  // ---------- helpers ----------
+  toast(msg, icon) {
+    this.setState({ toast: msg, toastIcon: icon || '✓' });
+    if (this._t) clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: null }), 3600);
+  }
+  cat(id) { return this.state.categories.find(c => c.id === id); }
+  catByLabel(label) { return this.state.categories.find(c => c.label === label); }
+  g(id) { return this.state.grievances.find(x => x.id === id); }
+  update(id, patch) {
+    this.setState(s => ({ grievances: s.grievances.map(x => x.id === id ? { ...x, ...patch } : x) }));
+  }
+
+  remainingMs(g) {
+    if (g.resolveDueMin == null) return null;
+    return g.resolveDueMin * 60000 - (Date.now() - this.base);
+  }
+  fmtDur(ms) {
+    const m = Math.round(ms / 60000);
+    if (m >= 1440) return (m / 1440).toFixed(m % 1440 === 0 ? 0 : 1) + 'd';
+    if (m >= 60) return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    return m + 'm';
+  }
+  slaView(g) {
+    if (g.status === 'Resolved' || g.status === 'Closed') return { label: g.status === 'Closed' ? 'Closed' : 'Awaiting closure', tone: 'done', big: '—', cap: 'SLA' };
+    const rem = this.remainingMs(g);
+    if (rem == null) return { label: 'Not started', tone: 'none', big: '—', cap: 'SLA' };
+    if (rem <= 0) return { label: this.fmtDur(-rem) + ' over SLA', tone: 'breach', big: this.fmtDur(-rem) + ' over', cap: 'SLA breached' };
+    const tone = rem < 2 * 3600000 ? 'risk' : 'ok';
+    return { label: this.fmtDur(rem) + ' to SLA', tone, big: this.fmtDur(rem) + ' left', cap: 'Resolve within' };
+  }
+  STATUS = {
+    'Submitted':   { fg: '#5b6b7c', bg: '#edf0f3' },
+    'Acknowledged':{ fg: '#3b6ba5', bg: '#e7eff7' },
+    'Assigned':    { fg: '#0c6157', bg: '#dff0ea' },
+    'In Progress': { fg: '#b9701f', bg: '#fbefd9' },
+    'Resolved':    { fg: '#2f7d4f', bg: '#e3f0e6' },
+    'Closed':      { fg: '#7d7565', bg: '#efe9dd' },
+    'Reopened':    { fg: '#7a52a8', bg: '#f0e9f6' },
+  };
+  PRIO = {
+    'P1': { fg: '#c0492f', bg: '#fbe6df' },
+    'P2': { fg: '#bf6a1c', bg: '#fbeeda' },
+    'P3': { fg: '#9a7b12', bg: '#f6efd6' },
+    'P4': { fg: '#6e7a8a', bg: '#eef1f4' },
+  };
+  badge(meta, extra) {
+    return `display:inline-flex;align-items:center;font-family:'Spline Sans Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.02em;padding:4px 9px;border-radius:20px;color:${meta.fg};background:${meta.bg};${extra || ''}`;
+  }
+  prioBadge(p) { return this.badge(this.PRIO[p] || this.PRIO.P3); }
+  statusBadge(s) { return this.badge(this.STATUS[s] || this.STATUS.Submitted); }
+  slaBadge(v) {
+    const map = { ok: { fg: '#0c6157', bg: '#dff0ea' }, risk: { fg: '#bf6a1c', bg: '#fbeeda' }, breach: { fg: '#c0492f', bg: '#fbe6df' }, done: { fg: '#7d7565', bg: '#efe9dd' }, none: { fg: '#8a8170', bg: '#f2ede3' } };
+    return this.badge(map[v.tone] || map.none);
+  }
+
+  // ---------- AI mock ----------
+  runAI(draft) {
+    let cat = draft.category ? this.cat(draft.category) : null;
+    const text = (draft.desc || '').toLowerCase();
+    if (!cat || draft.desc) {
+      const scored = this.state.categories.map(c => ({ c, hit: c.keywords.filter(k => text.includes(k)).length }));
+      const best = scored.sort((a, b) => b.hit - a.hit)[0];
+      if (best && best.hit > 0) cat = best.c;
+    }
+    if (!cat) cat = this.cat('pothole');
+    const base = draft.category && draft.category === cat.id ? 0.9 : 0.78;
+    const conf = Math.min(98, Math.round((base + Math.random() * 0.08) * 100));
+    return { ...draft, category: cat.id, categoryLabel: cat.label, icon: cat.icon,
+             aiDept: cat.dept, aiPrio: cat.priority, aiConf: conf, sla: cat.slaResolve };
+  }
+
+  // ---------- citizen nav ----------
+  setRole = (role) => {
+    const urlSeed = { citizen: 'home', operator: 'queue', field: 'list', supervisor: 'dash', admin: 'tax' };
+    this.setState({ role });
+  };
+  goCitizenHome = () => this.setState({ cScreen: 'home' });
+  startSubmit = () => this.setState({ cScreen: 'submit', step: 1, draft: { category: null, categoryLabel: '', icon: '📝', desc: '', photo: true, voice: false, ward: 'Ward 12', area: 'MG Road', mobile: '', name: '', channel: 'WhatsApp', aiDept: '', aiPrio: 'P3', aiConf: 0, sla: '' } });
+  goTrack = () => this.setState({ cScreen: 'track' });
+  backStep = () => this.setState(s => ({ step: Math.max(1, s.step - 1) }));
+
+  pickCat = (c) => this.setState(s => ({ draft: { ...s.draft, category: c.id, categoryLabel: c.label, icon: c.icon, aiDept: c.dept, aiPrio: c.priority, sla: c.slaResolve } }));
+  onDesc = (e) => { const v = e.target.value; this.setState(s => ({ draft: { ...s.draft, desc: v } })); };
+  onMobile = (e) => { const v = e.target.value; this.setState(s => ({ draft: { ...s.draft, mobile: v } })); };
+  onName = (e) => { const v = e.target.value; this.setState(s => ({ draft: { ...s.draft, name: v } })); };
+  togglePhoto = () => this.setState(s => ({ draft: { ...s.draft, photo: !s.draft.photo } }));
+  toggleVoice = () => this.setState(s => ({ draft: { ...s.draft, voice: !s.draft.voice } }));
+  pickChannel = (ch) => this.setState(s => ({ draft: { ...s.draft, channel: ch } }));
+  openCatPicker = () => this.setState({ step: 1 });
+
+  toStep2 = () => {
+    if (!this.state.draft.category && !this.state.draft.desc.trim()) { this.toast('Pick a category or describe the problem', '⚠'); return; }
+    this.setState(s => ({ draft: this.runAI(s.draft), step: 2 }));
+  };
+  toStep3 = () => this.setState({ step: 3 });
+  toStep4 = () => {
+    if (!/\d{6,}/.test(this.state.draft.mobile)) { this.toast('Enter a valid mobile number', '⚠'); return; }
+    this.setState({ step: 4 });
+  };
+
+  submitComplaint = () => {
+    const d = this.state.draft;
+    const n = this.state.counter + 1;
+    const id = 'NIV-' + n;
+    const c = this.cat(d.category);
+    const att = (d.photo ? 1 : 0) + (d.voice ? 1 : 0);
+    const now = this.nowLabel();
+    const g = {
+      id, title: d.categoryLabel, icon: d.icon, category: d.category, dept: d.aiDept,
+      priority: d.aiPrio, status: 'Submitted', channel: d.channel,
+      ward: d.ward, area: d.area, citizenName: d.name || 'You', citizenMobile: d.mobile || '98•••••210',
+      assignee: '—', attachments: att, aiDept: d.aiDept, aiPrio: d.aiPrio, aiConf: d.aiConf,
+      aiCatLabel: d.categoryLabel, dupCount: 0, resolveDueMin: null, escalated: false,
+      rating: null, reopenable: false, lowConf: d.aiConf < 70, mine: true, onTime: null, crew: null,
+      desc: d.desc || d.categoryLabel + ' reported by citizen.',
+      times: { 'Submitted': now, 'Acknowledged': now }, reopened: false,
+    };
+    this.setState(s => ({ grievances: [g, ...s.grievances], counter: n, cScreen: 'confirm', activeId: id }));
+    this.toast(id + ' created — now open Operator to triage it', '🎫');
+  };
+  nowLabel() { return 'Just now'; }
+
+  trackNew = () => this.setState({ cScreen: 'detail' });
+  openGrievance = (id) => this.setState({ activeId: id, cScreen: 'detail' });
+  escalateActive = () => { this.update(this.state.activeId, { escalated: true }); this.toast('Escalated to supervisor — visible on their dashboard', '⚡'); };
+  goRate = () => this.setState({ cScreen: 'rate', csat: 0 });
+  goReopen = () => this.setState({ cScreen: 'reopen', reopenReason: null });
+  backToDetail = () => this.setState({ cScreen: 'detail' });
+  setStar = (n) => this.setState({ csat: n });
+  submitRating = () => {
+    if (!this.state.csat) { this.toast('Tap a star to rate', '⚠'); return; }
+    this.update(this.state.activeId, { rating: this.state.csat });
+    this.toast('Thank you — rating recorded', '★');
+    this.setState({ cScreen: 'detail' });
+  };
+  pickReopenReason = (r) => this.setState({ reopenReason: r });
+  submitReopen = () => {
+    const id = this.state.activeId;
+    this.update(id, { status: 'Reopened', reopened: true, resolveDueMin: 1440, assignee: '—',
+      times: { ...this.g(id).times, 'Reopened': 'Just now' } });
+    this.toast(id + ' reopened — same ticket, back in operator queue', '↻');
+    this.setState({ cScreen: 'detail' });
+  };
+  toggleLang = () => this.setState(s => ({ lang: s.lang === 'en' ? 'hi' : 'en' }));
+
+  // ---------- operator ----------
+  setQueueFilter = (f) => this.setState({ queueFilter: f });
+  openOp = (id) => this.setState({ opActiveId: id, oScreen: 'detail' });
+  opBack = () => this.setState({ oScreen: 'queue' });
+  opAcceptAI = (id) => { const g = this.g(id); this.update(id, { status: g.status === 'Submitted' ? 'Acknowledged' : g.status, dept: g.aiDept, priority: g.aiPrio }); this.toast('AI routing accepted · ' + g.aiDept, '✦'); };
+  opOverride = (id) => { this.update(id, { dept: 'Roads & Infra', priority: 'P2' }); this.toast('Override logged — routed to Roads & Infra · P2', '✎'); };
+  opMerge = (id) => { const g = this.g(id); this.update(id, { dupCount: 0, mergedCount: g.dupCount }); this.toast(g.dupCount + ' duplicates merged into ' + id + ' — all reporters still notified', '⧉'); };
+  opAssign = (id) => { this.update(id, { status: 'Assigned', assignee: 'Crew 7', crew: 'Crew 7', resolveDueMin: this.g(id).resolveDueMin || this.catResolveMin(this.g(id).category) }); this.toast(id + ' assigned to Crew 7 — SLA clock started. Open Field staff →', '🚚'); };
+  opClose = (id) => { this.update(id, { status: 'Closed', reopenable: true, times: { ...this.g(id).times, 'Closed': 'Just now' } }); this.toast(id + ' closed — citizen prompted to rate', '✓'); };
+  catResolveMin(catId) { const c = this.cat(catId); const m = { '24h': 1440, '12h': 720, '72h': 4320, '7d': 10080, '48h': 2880 }; return c ? (m[c.slaResolve] || 1080) : 1080; }
+
+  // ---------- field ----------
+  openField = (id) => this.setState({ fActiveId: id, fScreen: 'job' });
+  fieldBack = () => this.setState({ fScreen: 'list' });
+  fieldInProgress = (id) => { this.update(id, { status: 'In Progress', times: { ...this.g(id).times, 'In Progress': 'Just now' } }); this.toast('Status → In Progress · citizen notified', '🛠'); };
+  fieldResolve = (id) => { this.update(id, { status: 'Resolved', attachments: (this.g(id).attachments || 0) + 1, times: { ...this.g(id).times, 'Resolved': 'Just now' } }); this.toast(id + ' marked Resolved — citizen notified, moves to operator for closure', '✓'); this.setState({ fScreen: 'list' }); };
+
+  // ---------- supervisor ----------
+  supReassign = (id) => { this.update(id, { assignee: 'Crew 2', resolveDueMin: 240 }); this.toast(id + ' reassigned to Crew 2 · SLA extended', '🔁'); };
+  supEscalate = (id) => { this.update(id, { escalated: true, priority: 'P1' }); this.toast(id + ' escalated to senior officer · bumped to P1', '⚡'); };
+
+  // ---------- admin ----------
+  adminEdit = (id) => this.setState({ adminEditId: this.state.adminEditId === id ? null : id });
+
+  // =======================================================
+  renderVals() {
+    const s = this.state;
+    const T = STRINGS[s.lang];
+    const out = { tick: s.tick, toast: s.toast, toastIcon: s.toastIcon, tx: T };
+
+    // ---- role tabs ----
+    const roles = [
+      { key: 'citizen', icon: '🙋', label: 'Citizen', who: 'Priya', sub: 'Public portal' },
+      { key: 'operator', icon: '🧑‍💼', label: 'Operator', who: 'Anjali', sub: 'Intake desk' },
+      { key: 'field', icon: '🦺', label: 'Field', who: 'Suresh', sub: 'Field crew' },
+      { key: 'supervisor', icon: '📊', label: 'Supervisor', who: 'Meera', sub: 'Zonal officer' },
+      { key: 'admin', icon: '⚙️', label: 'Admin', who: "Commissioner", sub: 'Configuration' },
+    ];
+    out.roleTabs = roles.map(r => {
+      const on = s.role === r.key;
+      return { ...r, go: () => this.setRole(r.key),
+        style: `display:flex;align-items:center;gap:8px;border:0;border-radius:9px;padding:7px 12px;cursor:pointer;transition:all .12s;${on ? 'background:#13716a;color:#fff;box-shadow:0 3px 9px -3px rgba(19,113,106,.6);' : 'background:transparent;color:#6e665b;'}` };
+    });
+
+    out.showCitizen = s.role === 'citizen';
+    out.showOperator = s.role === 'operator';
+    out.showField = s.role === 'field';
+    out.showSupervisor = s.role === 'supervisor';
+    out.showAdmin = s.role === 'admin';
+
+    // ---- browser chrome ----
+    const urls = {
+      citizen: 'samadhaan.gov.in/' + (s.cScreen === 'home' ? '' : s.cScreen),
+      operator: 'staff.samadhaan.gov.in/operator/' + (s.oScreen === 'queue' ? 'queue' : (s.opActiveId || '')),
+      field: 'staff.samadhaan.gov.in/field',
+      supervisor: 'staff.samadhaan.gov.in/supervisor/dashboard',
+      admin: 'staff.samadhaan.gov.in/admin/categories',
+    };
+    out.browserUrl = urls[s.role];
+    out.showLang = s.role === 'citizen';
+    out.langLabel = s.lang === 'en' ? 'EN' : 'हिं';
+    const avatars = { citizen: ['#13716a', 'P'], operator: ['#3b6ba5', 'A'], field: ['#b9701f', 'S'], supervisor: ['#7a52a8', 'M'], admin: ['#5b6b7c', 'C'] };
+    out.avatarBg = avatars[s.role][0]; out.avatarChar = avatars[s.role][1];
+    out.viewportBg = s.role === 'citizen' ? '#fbf8f2' : (s.role === 'field' ? '#ece5d8' : '#f6f2ea');
+    out.viewportKey = s.role + s.cScreen + s.oScreen + s.fScreen;
+    const hints = {
+      citizen: 'You are the citizen. Report a problem to mint a live Nivaran ticket, then switch roles to watch the same record move.',
+      operator: 'You are the intake operator. Triage the queue: accept/override AI routing, merge duplicates, then assign to a field crew.',
+      field: 'You are field crew. Pick an assigned job, mark it In Progress, then upload proof and Resolve it.',
+      supervisor: 'You are the zonal supervisor. Watch SLA health and act on breaches and escalations.',
+      admin: 'You configure the taxonomy that drives AI routing and SLA clocks for every category.',
+    };
+    out.stageHint = hints[s.role];
+
+    // ---- citizen text strings (dynamic via lang) ----
+    out.cHome = s.cScreen === 'home'; out.cSubmit = s.cScreen === 'submit';
+    out.cConfirm = s.cScreen === 'confirm'; out.cTrack = s.cScreen === 'track';
+    out.cDetail = s.cScreen === 'detail'; out.cRate = s.cScreen === 'rate'; out.cReopen = s.cScreen === 'reopen';
+
+    out.startSubmit = this.startSubmit; out.goTrack = this.goTrack; out.goCitizenHome = this.goCitizenHome;
+    out.toggleLang = this.toggleLang;
+    const navOn = 'background:#13716a;color:#fff;border:0;border-radius:9px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer;';
+    const navOff = 'background:transparent;color:#6e665b;border:0;border-radius:9px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer;';
+    out.cNavHome = s.cScreen === 'home' ? navOn : navOff;
+    out.cNavTrack = (s.cScreen === 'track' || s.cScreen === 'detail') ? navOn : navOff;
+
+    // quick categories on home
+    const quick = ['pothole', 'sewage', 'garbage', 'streetlight'].map(id => this.cat(id)).filter(Boolean);
+    out.quickCats = quick.map(c => ({ icon: c.icon, label: c.label, dept: c.dept, go: () => { this.pickCat(c); this.setState({ cScreen: 'submit', step: 1 }); } }));
+
+    // ---- submit ----
+    out.steps = [1, 2, 3, 4].map(n => {
+      const labels = { 1: T.stDescribe, 2: T.stReview2, 3: T.stDetails, 4: T.stConfirm };
+      const done = s.step > n, cur = s.step === n;
+      return { label: labels[n], mark: done ? '✓' : String(n),
+        dotStyle: done ? 'background:#13716a;color:#fff;' : (cur ? 'background:#13716a;color:#fff;' : 'background:#ece4d4;color:#9a9183;'),
+        labStyle: cur ? 'color:#2b2620;' : 'color:#9a9183;',
+        lineStyle: n < 4 ? (done ? 'background:#13716a;' : 'background:#ece4d4;') : 'background:transparent;' };
+    });
+    out.isStep1 = s.step === 1; out.isStep2 = s.step === 2; out.isStep3 = s.step === 3; out.isStep4 = s.step === 4;
+    out.catChoices = s.categories.filter(c => c.featured).map(c => ({ icon: c.icon, label: c.label, pick: () => this.pickCat(c),
+      style: `display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 7px;border-radius:12px;cursor:pointer;transition:all .12s;${s.draft.category === c.id ? 'background:#dff0ea;border:1.5px solid #13716a;' : 'background:#fff;border:1.5px solid #e6dcc8;'}` }));
+    out.draftDesc = s.draft.desc; out.onDesc = this.onDesc;
+    out.onMobile = this.onMobile; out.onName = this.onName;
+    out.draftMobile = s.draft.mobile; out.draftName = s.draft.name;
+    out.togglePhoto = this.togglePhoto; out.toggleVoice = this.toggleVoice;
+    out.photoLabel = s.draft.photo ? T.photoAdded : T.addPhoto;
+    out.voiceLabel = s.draft.voice ? T.voiceAdded : T.voiceNote;
+    const chip = (on) => `display:inline-flex;align-items:center;gap:7px;border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;${on ? 'background:#dff0ea;border:1.5px solid #13716a;color:#0c6157;' : 'background:#fff;border:1.5px solid #e6dcc8;color:#2b2620;'}`;
+    out.photoStyle = chip(s.draft.photo); out.voiceStyle = chip(s.draft.voice);
+    out.toStep2 = this.toStep2; out.toStep3 = this.toStep3; out.toStep4 = this.toStep4; out.backStep = this.backStep;
+    out.openCatPicker = this.openCatPicker;
+    const primBtn = 'background:#13716a;color:#fff;border:0;border-radius:11px;padding:12px 22px;font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(19,113,106,.7);';
+    const ghostBtn = 'background:#fff;color:#2b2620;border:1px solid #ddd4c2;border-radius:11px;padding:12px 20px;font-weight:600;font-size:14.5px;cursor:pointer;';
+    out.primBtn = primBtn; out.ghostBtn = ghostBtn;
+    out.next1Style = primBtn; out.next3Style = primBtn;
+    out.draftCatLabel = s.draft.categoryLabel || '—'; out.draftAiDept = s.draft.aiDept || '—';
+    out.draftAiPrio = s.draft.aiPrio; out.draftAiConf = s.draft.aiConf;
+    out.draftPrioStyle = this.prioBadge(s.draft.aiPrio);
+    out.draftSla = s.draft.sla ? ('Resolve in ' + s.draft.sla) : '—';
+    out.draftArea = s.draft.area; out.draftWard = s.draft.ward;
+    out.draftIcon = s.draft.icon; out.draftChannel = s.draft.channel;
+    out.draftDescShown = s.draft.desc || (s.draft.categoryLabel + ' reported.');
+    const att = (s.draft.photo ? 1 : 0) + (s.draft.voice ? 1 : 0);
+    out.draftAttachLabel = att ? ('📎 ' + att + ' attachment' + (att > 1 ? 's' : '')) : '📎 no attachment';
+    out.channelChoices = ['WhatsApp', 'SMS', 'Push'].map(ch => ({ label: ch, icon: ch === 'WhatsApp' ? '💬' : (ch === 'SMS' ? '✉️' : '🔔'), pick: () => this.pickChannel(ch),
+      style: chip(s.draft.channel === ch) }));
+    out.submitComplaint = this.submitComplaint;
+
+    // ---- confirmation ----
+    const ag = this.g(s.activeId);
+    if (ag) {
+      out.newId = ag.id; out.newDept = ag.dept; out.newPrio = ag.priority;
+      out.newPrioStyle = this.prioBadge(ag.priority);
+      const c = this.cat(ag.category);
+      out.newEta = c ? ('within ' + c.slaResolve) : 'within SLA';
+    } else { out.newId = '—'; out.newDept = '—'; out.newPrio = 'P3'; out.newPrioStyle = this.prioBadge('P3'); out.newEta = '—'; }
+    out.trackNew = this.trackNew;
+
+    // ---- track list ----
+    const mine = s.grievances.filter(g => g.mine);
+    out.myCount = mine.length;
+    out.myGrievances = mine.map(g => this.cardVM(g));
+
+    // ---- detail ----
+    if (ag) {
+      out.aIcon = ag.icon; out.aTitle = ag.title; out.aId = ag.id; out.aDept = ag.dept;
+      out.aAssignee = ag.assignee && ag.assignee !== '—' ? ag.assignee : 'Awaiting assignment';
+      out.aStatusLabel = ag.status; out.aStatusStyle = this.statusBadge(ag.status);
+      out.aReopenedFlag = ag.reopened;
+      const sv = this.slaView(ag);
+      out.aSlaCaption = sv.cap; out.aSlaBig = sv.big; out.aEta = this.etaLine(ag);
+      out.aSlaColor = sv.tone === 'breach' ? 'color:#c0492f;' : (sv.tone === 'risk' ? 'color:#bf6a1c;' : 'color:#0c6157;');
+      out.aTimeline = this.timelineVM(ag);
+      out.aAttachLabel = (ag.attachments || 0) + ' attachment' + (ag.attachments === 1 ? '' : 's');
+      out.aShowActive = !['Resolved', 'Closed'].includes(ag.status);
+      out.aShowClosed = ag.status === 'Closed';
+      out.aRatingLine = ag.rating ? ('You rated this ' + ag.rating + '★') : 'Closed by ' + ag.dept + ' · share your feedback';
+      out.aReopenWindow = ag.reopenable ? 'Reopen available within 7 days of closure' : '';
+    }
+    out.escalateActive = this.escalateActive; out.goRate = this.goRate; out.goReopen = this.goReopen;
+    out.backToDetail = this.backToDetail;
+
+    // ---- rate ----
+    out.stars = [1, 2, 3, 4, 5].map(n => ({ set: () => this.setStar(n), style: n <= s.csat ? 'color:#e8a23d;' : 'color:#dcd3c2;' }));
+    out.submitRating = this.submitRating;
+    out.rateBtnStyle = s.csat ? primBtn : 'background:#cfc6b4;color:#fff;border:0;border-radius:11px;padding:12px 22px;font-weight:700;font-size:14.5px;cursor:pointer;';
+
+    // ---- reopen ----
+    out.reopenReasons = ['Not actually fixed', 'Problem recurred', 'Closed too early'].map(r => ({ label: r, pick: () => this.pickReopenReason(r),
+      style: chip(s.reopenReason === r) }));
+    out.submitReopen = this.submitReopen;
+    out.reopenBtnStyle = 'background:#7a52a8;color:#fff;border:0;border-radius:11px;padding:13px 22px;font-weight:700;font-size:14.5px;cursor:pointer;width:100%;';
+
+    // operator / field / supervisor / admin view-models added in next step
+    this.roleVMs(out);
+    return out;
+  }
+
+  cardVM(g) {
+    const sv = this.slaView(g);
+    return { id: g.id, title: g.title, icon: g.icon, dept: g.dept, area: g.area + ', ' + g.ward,
+      statusLabel: g.status, statusStyle: this.statusBadge(g.status),
+      slaLabel: sv.label, slaStyle: this.slaBadge(sv), nextLine: this.etaLine(g),
+      open: () => this.openGrievance(g.id) };
+  }
+  etaLine(g) {
+    if (g.status === 'Closed') return 'Closed · ' + (g.times['Closed'] || '');
+    if (g.status === 'Resolved') return 'Resolved · awaiting closure';
+    if (g.status === 'Submitted') return 'Acknowledged · awaiting triage';
+    if (g.status === 'Reopened') return 'Reopened · back in queue';
+    if (g.assignee && g.assignee !== '—') return 'Next: site work by ' + (this.cat(g.category) ? this.cat(g.category).slaResolve : 'SLA');
+    return 'Owner assigned · ' + g.dept;
+  }
+  timelineVM(g) {
+    const order = ['Submitted', 'Acknowledged', 'Assigned', 'In Progress', 'Resolved', 'Closed'];
+    const idx = Math.max(0, order.indexOf(g.status === 'Reopened' ? 'Assigned' : g.status));
+    const subs = {
+      'Submitted': g.times['Submitted'] || '' , 'Acknowledged': (g.times['Acknowledged'] || '') + ' · ID issued',
+      'Assigned': g.assignee !== '—' ? (g.times['Assigned'] || '') + ' · ' + g.assignee : 'pending',
+      'In Progress': g.times['In Progress'] || 'on site', 'Resolved': g.times['Resolved'] || 'proof uploaded',
+      'Closed': g.times['Closed'] || 'department closure',
+    };
+    return order.map((st, i) => {
+      const done = i < idx, cur = i === idx;
+      return { label: st, sub: subs[st] || '',
+        dotStyle: done ? 'background:#13716a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;' : (cur ? 'background:#fff;border:2.5px solid #13716a;' : 'background:#fff;border:2px solid #e0d8c9;'),
+        dotMark: done ? '✓' : '',
+        lineStyle: i < order.length - 1 ? (done ? 'background:#13716a;' : 'background:#e6dcc8;') : 'background:transparent;',
+        titleColor: cur ? 'color:#0c6157;' : (done ? '' : 'color:#9a9183;'),
+        fade: (done || cur) ? '' : 'opacity:.55;' };
+    });
+  }
+
+  roleVMs(out) { /* filled in operator/field/supervisor/admin step */ }
+}
+
+// ============ SEED DATA ============
+function SEED_CATEGORIES() {
+  return [
+    { id: 'manhole', label: 'Open manhole', icon: '🕳️', dept: 'Roads & Infra', priority: 'P1', slaAck: '1h', slaResolve: '24h', keywords: ['manhole', 'open hole', 'uncovered'], featured: false },
+    { id: 'sewage', label: 'Sewage overflow', icon: '🌊', dept: 'Water & Sewerage', priority: 'P1', slaAck: '1h', slaResolve: '12h', keywords: ['sewage', 'overflow', 'drain', 'gutter'], featured: true },
+    { id: 'nowater', label: 'No water supply', icon: '🚱', dept: 'Water & Sewerage', priority: 'P2', slaAck: '4h', slaResolve: '72h', keywords: ['no water', 'water supply', 'tap dry'], featured: true },
+    { id: 'pothole', label: 'Pothole', icon: '🛣️', dept: 'Roads & Infra', priority: 'P3', slaAck: '12h', slaResolve: '7d', keywords: ['pothole', 'road', 'broken road', 'crater'], featured: true },
+    { id: 'garbage', label: 'Garbage not collected', icon: '🗑️', dept: 'Solid Waste', priority: 'P2', slaAck: '4h', slaResolve: '72h', keywords: ['garbage', 'trash', 'waste', 'not collected'], featured: true },
+    { id: 'streetlight', label: 'Streetlight out', icon: '💡', dept: 'Street Lighting', priority: 'P3', slaAck: '12h', slaResolve: '7d', keywords: ['light', 'streetlight', 'dark', 'lamp'], featured: true },
+    { id: 'waterlog', label: 'Water logging', icon: '🌧️', dept: 'Water & Sewerage', priority: 'P2', slaAck: '4h', slaResolve: '48h', keywords: ['flood', 'waterlog', 'logging', 'submerged'], featured: true },
+    { id: 'stray', label: 'Stray animals', icon: '🐄', dept: 'Public Health', priority: 'P3', slaAck: '8h', slaResolve: '48h', keywords: ['stray', 'cattle', 'dog', 'animal'], featured: true },
+  ];
+}
+function SEED_GRIEVANCES() {
+  return [
+    { id: 'NIV-4821', title: 'Pothole on MG Road', icon: '🛣️', category: 'pothole', dept: 'Roads & Infra', priority: 'P3', status: 'In Progress', channel: 'WhatsApp', ward: 'Ward 12', area: 'MG Road', citizenName: 'Priya', citizenMobile: '98•••••210', assignee: 'Roads · Crew 3', attachments: 1, aiDept: 'Roads & Infra', aiPrio: 'P3', aiConf: 90, aiCatLabel: 'Pothole', dupCount: 4, resolveDueMin: 1080, escalated: false, rating: null, reopenable: false, lowConf: false, mine: true, onTime: null, crew: 'Crew 3', desc: 'Large pothole near the MG Road junction, two-wheelers are skidding.', times: { 'Submitted': '28 Jun · 09:12', 'Acknowledged': '28 Jun · 09:12', 'Assigned': '29 Jun · 10:40', 'In Progress': '30 Jun · 08:20' }, reopened: false },
+    { id: 'NIV-4710', title: 'Streetlight out', icon: '💡', category: 'streetlight', dept: 'Street Lighting', priority: 'P3', status: 'Closed', channel: 'App', ward: 'Ward 9', area: 'Nehru Park', citizenName: 'Priya', citizenMobile: '98•••••210', assignee: 'Crew 5', attachments: 2, aiDept: 'Street Lighting', aiPrio: 'P3', aiConf: 88, aiCatLabel: 'Streetlight out', dupCount: 0, resolveDueMin: null, escalated: false, rating: null, reopenable: true, lowConf: false, mine: true, onTime: true, crew: 'Crew 5', desc: 'Streetlight outside Nehru Park gate has been dark for a week.', times: { 'Submitted': '20 Jun', 'Acknowledged': '20 Jun', 'Assigned': '20 Jun', 'In Progress': '21 Jun', 'Resolved': '21 Jun', 'Closed': '22 Jun · 14:00' }, reopened: false },
+    { id: 'NIV-4990', title: 'Sewage overflow near market', icon: '🌊', category: 'sewage', dept: 'Water & Sewerage', priority: 'P1', status: 'In Progress', channel: 'WhatsApp', ward: 'Ward 12', area: 'Gandhi Market', citizenName: 'Ramesh', citizenMobile: '99•••••145', assignee: 'Crew 7', attachments: 2, aiDept: 'Water & Sewerage', aiPrio: 'P1', aiConf: 96, aiCatLabel: 'Sewage overflow', dupCount: 0, resolveDueMin: 36, escalated: false, rating: null, reopenable: false, lowConf: false, mine: false, onTime: null, crew: 'Crew 7', desc: 'Sewage overflowing onto the road near Gandhi Market, foul smell, shops affected.', times: { 'Submitted': 'today · 06:40', 'Acknowledged': 'today · 06:41', 'Assigned': 'today · 07:10', 'In Progress': 'today · 08:05' }, reopened: false },
+    { id: 'NIV-4870', title: 'No water supply for 2 days', icon: '🚱', category: 'nowater', dept: 'Water & Sewerage', priority: 'P2', status: 'Assigned', channel: 'Phone', ward: 'Ward 7', area: 'Subhash Colony', citizenName: 'Imran', citizenMobile: '97•••••883', assignee: 'Crew 4', attachments: 0, aiDept: 'Water & Sewerage', aiPrio: 'P2', aiConf: 88, aiCatLabel: 'No water supply', dupCount: 2, resolveDueMin: -130, escalated: true, rating: null, reopenable: false, lowConf: false, mine: false, onTime: null, crew: 'Crew 4', desc: 'No water supply in Subhash Colony for the last two days, entire lane affected.', times: { 'Submitted': '25 Jun', 'Acknowledged': '25 Jun', 'Assigned': '25 Jun' }, reopened: false },
+    { id: 'NIV-4655', title: 'Garbage not collected', icon: '🗑️', category: 'garbage', dept: 'Solid Waste', priority: 'P2', status: 'Submitted', channel: 'Web', ward: 'Ward 12', area: 'Rose Lane', citizenName: 'Sana', citizenMobile: '98•••••012', assignee: '—', attachments: 1, aiDept: 'Solid Waste', aiPrio: 'P2', aiConf: 92, aiCatLabel: 'Garbage not collected', dupCount: 0, resolveDueMin: null, escalated: false, rating: null, reopenable: false, lowConf: false, mine: false, onTime: null, crew: null, desc: 'Garbage has not been collected from Rose Lane for 4 days.', times: { 'Submitted': 'today · 08:30', 'Acknowledged': 'today · 08:30' }, reopened: false },
+    { id: 'NIV-4994', title: '"water near park?"', icon: '❓', category: 'waterlog', dept: '—', priority: 'P3', status: 'Submitted', channel: 'WhatsApp', ward: 'Ward 3', area: 'City Park', citizenName: 'Unknown', citizenMobile: '96•••••770', assignee: '—', attachments: 0, aiDept: 'Water & Sewerage', aiPrio: 'P3', aiConf: 54, aiCatLabel: 'Water logging?', dupCount: 0, resolveDueMin: null, escalated: false, rating: null, reopenable: false, lowConf: true, mine: false, onTime: null, crew: null, desc: 'water near park?', times: { 'Submitted': 'today · 09:02', 'Acknowledged': 'today · 09:02' }, reopened: false },
+    { id: 'NIV-5012', title: 'Open manhole near school', icon: '🕳️', category: 'manhole', dept: 'Roads & Infra', priority: 'P1', status: 'Resolved', channel: 'App', ward: 'Ward 4', area: 'St. Mary Rd', citizenName: 'Deepak', citizenMobile: '95•••••330', assignee: 'Crew 1', attachments: 2, aiDept: 'Roads & Infra', aiPrio: 'P1', aiConf: 97, aiCatLabel: 'Open manhole', dupCount: 0, resolveDueMin: 120, escalated: false, rating: null, reopenable: false, lowConf: false, mine: false, onTime: true, crew: 'Crew 1', desc: 'Open manhole right outside the school gate, very dangerous for children.', times: { 'Submitted': 'today · 05:50', 'Acknowledged': 'today · 05:51', 'Assigned': 'today · 06:30', 'In Progress': 'today · 07:40', 'Resolved': 'today · 11:10' }, reopened: false },
+    { id: 'NIV-5008', title: 'Fallen tree branch blocking lane', icon: '🌳', category: 'pothole', dept: 'Roads & Infra', priority: 'P2', status: 'Submitted', channel: 'Web', ward: 'Ward 6', area: 'Lake View Rd', citizenName: 'Anita', citizenMobile: '94•••••556', assignee: '—', attachments: 1, aiDept: 'Roads & Infra', aiPrio: 'P2', aiConf: 81, aiCatLabel: 'Road obstruction', dupCount: 0, resolveDueMin: null, escalated: false, rating: null, reopenable: false, lowConf: false, mine: false, onTime: null, crew: null, desc: 'A large tree branch fell and is blocking half of Lake View Road.', times: { 'Submitted': 'today · 07:55', 'Acknowledged': 'today · 07:55' }, reopened: false },
+    { id: 'NIV-5031', title: 'Dead animal removal', icon: '🐄', category: 'stray', dept: 'Public Health', priority: 'P2', status: 'Assigned', channel: 'WhatsApp', ward: 'Ward 12', area: 'Station Rd', citizenName: 'Latha', citizenMobile: '93•••••221', assignee: 'Crew 7', attachments: 1, aiDept: 'Public Health', aiPrio: 'P2', aiConf: 85, aiCatLabel: 'Stray / animal', dupCount: 0, resolveDueMin: 300, escalated: false, rating: null, reopenable: false, lowConf: false, mine: false, onTime: null, crew: 'Crew 7', desc: 'Dead animal on Station Road needs removal.', times: { 'Submitted': 'today · 08:10', 'Acknowledged': 'today · 08:10', 'Assigned': 'today · 08:45' }, reopened: false },
+    { id: 'NIV-4602', title: 'Stray cattle on highway', icon: '🐄', category: 'stray', dept: 'Public Health', priority: 'P3', status: 'Closed', channel: 'Phone', ward: 'Ward 5', area: 'Ring Rd', citizenName: 'Mohan', citizenMobile: '92•••••118', assignee: 'Crew 9', attachments: 1, aiDept: 'Public Health', aiPrio: 'P3', aiConf: 90, aiCatLabel: 'Stray animals', dupCount: 0, resolveDueMin: null, escalated: false, rating: 5, reopenable: true, lowConf: false, mine: false, onTime: true, crew: 'Crew 9', desc: 'Stray cattle wandering on the Ring Road.', times: { 'Submitted': '23 Jun', 'Acknowledged': '23 Jun', 'Assigned': '23 Jun', 'In Progress': '24 Jun', 'Resolved': '24 Jun', 'Closed': '24 Jun' }, reopened: false },
+    { id: 'NIV-4501', title: 'Garbage pile near bus stop', icon: '🗑️', category: 'garbage', dept: 'Solid Waste', priority: 'P2', status: 'Closed', channel: 'WhatsApp', ward: 'Ward 8', area: 'Bus Stand', citizenName: 'Farah', citizenMobile: '91•••••904', assignee: 'Crew 6', attachments: 2, aiDept: 'Solid Waste', aiPrio: 'P2', aiConf: 93, aiCatLabel: 'Garbage not collected', dupCount: 0, resolveDueMin: null, escalated: false, rating: 4, reopenable: true, lowConf: false, mine: false, onTime: true, crew: 'Crew 6', desc: 'Garbage piling up near the main bus stop.', times: { 'Submitted': '22 Jun', 'Acknowledged': '22 Jun', 'Assigned': '22 Jun', 'In Progress': '23 Jun', 'Resolved': '23 Jun', 'Closed': '23 Jun' }, reopened: false },
+  ];
+}
+
+// ============ STRINGS (en / hi) ============
+const STRINGS = {
+  en: {
+    brand: 'Samadhaan Saarthi', navHome: 'Home', navTrack: 'Track',
+    live: 'Live · 24×7', heroTitle: 'City services, fixed with one number.',
+    heroSub: 'Report a civic problem on any channel and get a single Nivaran ticket — one ID, one accountable department, one deadline you can watch.',
+    report: 'Report a problem', track: 'Track a complaint', alsoOn: 'Also on', walkin: 'Walk-in',
+    promise: 'Our promise to you', p1t: 'A real ticket, instantly', p1s: 'Every report gets a Nivaran ID — nothing goes dark.',
+    p2t: 'A named owner', p2s: 'You always see which department owns it.', p3t: 'A deadline you can see', p3s: 'A live SLA clock, not a black box.',
+    common: 'Common problems',
+    stDescribe: 'Describe', stReview2: 'Confirm', stDetails: 'Your details', stConfirm: 'Review',
+    s1title: 'What’s the problem?', s1sub: 'Pick a type or just describe it — our assistant will sort the rest.',
+    whatKind: 'What kind of problem?', describe: 'Describe it', descPh: 'e.g. Large pothole near MG Road junction, dangerous for two-wheelers…',
+    addPhoto: 'Add photo', photoAdded: 'Photo added ✓', voiceNote: 'Voice note', voiceAdded: 'Voice note ✓', next: 'Next',
+    s2title: 'Here’s what we found', s2sub: 'Our assistant suggested this — change it if it’s not right.',
+    aiSuggests: 'AI suggestion', conf: 'sure', category: 'Category', dept: 'Department', priority: 'Priority', target: 'Resolve target', notRight: 'Not right? Change category',
+    adjustPin: 'Tap to adjust the pin',
+    s3title: 'How should we reach you?', s3sub: 'No account needed — we identify you by mobile number.',
+    mobile: 'Mobile number', name: 'Name', optional: '(optional)', namePh: 'Your name', updatesOn: 'Get updates on',
+    review: 'Review', s4title: 'Review & submit', s4sub: 'One last look before this becomes a live Nivaran record.', submitNow: 'Submit complaint',
+    recorded: 'Recorded ✓', recordedSub: 'Your grievance is now a tracked Nivaran ticket.',
+    ticketNo: 'Nivaran ticket', owner: 'Owning department', resolveBy: 'Resolve by', updatesVia: 'Updates will come via',
+    trackThis: 'Track this complaint', done: 'Done', demoHint: 'Prototype tip: switch to the Operator role above to triage this exact ticket.',
+    trackTitle: 'Track your complaints', trackSub: 'Look up by ticket number or mobile — no login needed.',
+    lookupPh: 'Ticket no. or mobile number', yourComplaints: 'Your complaints', viewDetail: 'View',
+    allComplaints: 'All complaints', progress: 'Progress', tapToView: 'tap to view evidence',
+    reopenedNote: 'You reopened this — same ticket, accountability chain intact.',
+    escalate: 'Escalate', addInfo: 'Add info', howDidWeDo: 'How did we do?', rate: 'Rate', reopen: 'Reopen',
+    reopenTitle: 'Reopen complaint', reopenExplain: 'Reopening reactivates the SAME ticket — no new ID, full history kept.',
+    whyReopen: 'Why are you reopening?', reopenPh: 'Add detail or a fresh photo…', reopenNow: 'Reopen complaint',
+    commentPh: 'Optional comment…', submitRating: 'Submit rating',
+  },
+  hi: {
+    brand: 'समाधान सारथी', navHome: 'होम', navTrack: 'स्थिति',
+    live: 'लाइव · 24×7', heroTitle: 'शहर की समस्याएँ, एक नंबर से हल।',
+    heroSub: 'किसी भी माध्यम से शिकायत दर्ज करें और पाएँ एक निवारण टिकट — एक आईडी, एक ज़िम्मेदार विभाग, और एक समयसीमा जो आप देख सकते हैं।',
+    report: 'समस्या दर्ज करें', track: 'शिकायत ट्रैक करें', alsoOn: 'यहाँ भी', walkin: 'केंद्र',
+    promise: 'हमारा वादा', p1t: 'तुरंत असली टिकट', p1s: 'हर शिकायत को एक निवारण आईडी मिलती है।',
+    p2t: 'ज़िम्मेदार विभाग', p2s: 'आपको हमेशा पता रहेगा कि कौन ज़िम्मेदार है।', p3t: 'दिखने वाली समयसीमा', p3s: 'एक लाइव एसएलए घड़ी, कोई काला डिब्बा नहीं।',
+    common: 'आम समस्याएँ',
+    stDescribe: 'विवरण', stReview2: 'पुष्टि', stDetails: 'आपकी जानकारी', stConfirm: 'समीक्षा',
+    s1title: 'क्या समस्या है?', s1sub: 'एक प्रकार चुनें या बस लिखें — बाकी सहायक संभाल लेगा।',
+    whatKind: 'किस तरह की समस्या?', describe: 'विवरण लिखें', descPh: 'जैसे— एमजी रोड पर बड़ा गड्ढा, दुपहिया वाहनों के लिए खतरनाक…',
+    addPhoto: 'फ़ोटो जोड़ें', photoAdded: 'फ़ोटो जोड़ी ✓', voiceNote: 'वॉइस नोट', voiceAdded: 'वॉइस नोट ✓', next: 'आगे',
+    s2title: 'हमें यह मिला', s2sub: 'सहायक ने यह सुझाया — ग़लत हो तो बदलें।',
+    aiSuggests: 'एआई सुझाव', conf: 'निश्चित', category: 'श्रेणी', dept: 'विभाग', priority: 'प्राथमिकता', target: 'समाधान लक्ष्य', notRight: 'सही नहीं? श्रेणी बदलें',
+    adjustPin: 'पिन समायोजित करने के लिए टैप करें',
+    s3title: 'हम आप तक कैसे पहुँचें?', s3sub: 'खाता ज़रूरी नहीं — हम आपको मोबाइल नंबर से पहचानते हैं।',
+    mobile: 'मोबाइल नंबर', name: 'नाम', optional: '(वैकल्पिक)', namePh: 'आपका नाम', updatesOn: 'अपडेट यहाँ पाएँ',
+    review: 'समीक्षा', s4title: 'समीक्षा करें और दर्ज करें', s4sub: 'दर्ज करने से पहले एक आख़िरी नज़र।', submitNow: 'शिकायत दर्ज करें',
+    recorded: 'दर्ज हो गई ✓', recordedSub: 'आपकी शिकायत अब एक ट्रैक होने वाला निवारण टिकट है।',
+    ticketNo: 'निवारण टिकट', owner: 'ज़िम्मेदार विभाग', resolveBy: 'समाधान तक', updatesVia: 'अपडेट मिलेंगे',
+    trackThis: 'इस शिकायत को ट्रैक करें', done: 'पूर्ण', demoHint: 'प्रोटोटाइप सुझाव: इसी टिकट को संभालने के लिए ऊपर ऑपरेटर भूमिका चुनें।',
+    trackTitle: 'अपनी शिकायतें ट्रैक करें', trackSub: 'टिकट नंबर या मोबाइल से खोजें — लॉगिन ज़रूरी नहीं।',
+    lookupPh: 'टिकट नंबर या मोबाइल नंबर', yourComplaints: 'आपकी शिकायतें', viewDetail: 'देखें',
+    allComplaints: 'सभी शिकायतें', progress: 'प्रगति', tapToView: 'सबूत देखने के लिए टैप करें',
+    reopenedNote: 'आपने इसे फिर खोला — वही टिकट, ज़िम्मेदारी कायम।',
+    escalate: 'एस्केलेट', addInfo: 'जानकारी जोड़ें', howDidWeDo: 'हमने कैसा किया?', rate: 'रेटिंग', reopen: 'फिर खोलें',
+    reopenTitle: 'शिकायत फिर खोलें', reopenExplain: 'फिर खोलने पर वही टिकट सक्रिय होता है — कोई नई आईडी नहीं, पूरा इतिहास सुरक्षित।',
+    whyReopen: 'फिर क्यों खोल रहे हैं?', reopenPh: 'विवरण या नई फ़ोटो जोड़ें…', reopenNow: 'शिकायत फिर खोलें',
+    commentPh: 'वैकल्पिक टिप्पणी…', submitRating: 'रेटिंग दें',
+  },
+};
+</script>
+</body>
+</html>
